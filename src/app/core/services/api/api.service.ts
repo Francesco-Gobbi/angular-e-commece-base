@@ -14,7 +14,7 @@ export class ApiService {
     Authorization: 'Bearer YOUR_TOKEN_HERE',
   });
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   get<T>(endpoint: string, params?: HttpParams): Observable<T> {
     return this.http.get<T>(`${this.baseUrl}/${endpoint}`, {
