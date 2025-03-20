@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = '';
+  private baseUrl = environment.apiUrl;
 
   private defaultHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
