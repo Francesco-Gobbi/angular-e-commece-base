@@ -1,0 +1,1088 @@
+{
+  "info": {
+    "name": "server-angular-jac-server",
+    "description": "",
+    "version": "4.1.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Check JWT Validity",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/auth/checkJWT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        },
+        {
+          "name": "Renew JWT",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/auth/renewJWT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        },
+        {
+          "name": "Authenticate",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{basic_password}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{basic_username}}",
+                  "type": "string"
+                },
+                {
+                  "key": "showPassword",
+                  "value": false,
+                  "type": "boolean"
+                }
+              ],
+              "bearer": []
+            },
+            "method": "POST",
+            "url": "{{base_url}}/auth",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        },
+        {
+          "name": "Authenticate with social login",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{basic_password}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{basic_username}}",
+                  "type": "string"
+                },
+                {
+                  "key": "showPassword",
+                  "value": false,
+                  "type": "boolean"
+                }
+              ],
+              "bearer": []
+            },
+            "method": "POST",
+            "url": "{{base_url}}/auth/sociallogin",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        },
+        {
+          "name": "refresh",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{basic_password}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{basic_username}}",
+                  "type": "string"
+                },
+                {
+                  "key": "showPassword",
+                  "value": false,
+                  "type": "boolean"
+                }
+              ],
+              "bearer": []
+            },
+            "method": "POST",
+            "url": "{{base_url}}/auth/refresh",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        },
+        {
+          "name": "Register an user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{master_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": "{{base_url}}/auth/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categorie",
+      "item": [
+        {
+          "name": "Retrieve categorie",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/categories/:id",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Horacio.Prosacco81\",\"description\":\"Briana_Ondricka94\",\"createdBy\":\"67dc1e22f5dfe5005f6c1659\",\"createdAt\":\"2025-03-19T18:17:38.439Z\",\"updatedAt\":\"2025-03-20T06:37:48.739Z\"}"
+            }
+          }
+        },
+        {
+          "name": "List categories",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/categories",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Horacio.Prosacco81\",\"description\":\"Briana_Ondricka94\",\"createdBy\":\"67dc1e22f5dfe5005f6c1659\",\"createdAt\":\"2025-03-19T18:17:38.439Z\",\"updatedAt\":\"2025-03-20T06:37:48.739Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Create categorie",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": "{{base_url}}/categories",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Horacio.Prosacco81\",\"description\":\"Briana_Ondricka94\",\"createdBy\":\"67dc1e22f5dfe5005f6c1659\",\"createdAt\":\"2025-03-19T18:17:38.439Z\",\"updatedAt\":\"2025-03-20T06:37:48.739Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Update categorie",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "url": "{{base_url}}/categories/:id",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Horacio.Prosacco81\",\"description\":\"Briana_Ondricka94\",\"createdBy\":\"67dc1e22f5dfe5005f6c1659\",\"createdAt\":\"2025-03-19T18:17:38.439Z\",\"updatedAt\":\"2025-03-20T06:37:48.739Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Delete categorie",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}/categories/:id",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Horacio.Prosacco81\",\"description\":\"Briana_Ondricka94\",\"createdBy\":\"67dc1e22f5dfe5005f6c1659\",\"createdAt\":\"2025-03-19T18:17:38.439Z\",\"updatedAt\":\"2025-03-20T06:37:48.739Z\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Retrieve order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/orders/:id",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderNumber\":\"Maybell_Bednar\",\"userId\":\"67dc1e22f5dfe5005f6c165d\",\"totalAmount\":65,\"status\":\"completed\",\"createdBy\":\"67dc1e22f5dfe5005f6c165e\",\"createdAt\":\"2025-03-20T00:02:09.549Z\",\"updatedAt\":\"2025-03-20T06:53:51.295Z\"}"
+            }
+          }
+        },
+        {
+          "name": "List orders",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/orders",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderNumber\":\"Maybell_Bednar\",\"userId\":\"67dc1e22f5dfe5005f6c165d\",\"totalAmount\":65,\"status\":\"completed\",\"createdBy\":\"67dc1e22f5dfe5005f6c165e\",\"createdAt\":\"2025-03-20T00:02:09.549Z\",\"updatedAt\":\"2025-03-20T06:53:51.295Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Create order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": "{{base_url}}/orders",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderNumber\":\"Maybell_Bednar\",\"userId\":\"67dc1e22f5dfe5005f6c165d\",\"totalAmount\":65,\"status\":\"completed\",\"createdBy\":\"67dc1e22f5dfe5005f6c165e\",\"createdAt\":\"2025-03-20T00:02:09.549Z\",\"updatedAt\":\"2025-03-20T06:53:51.295Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Update order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "url": "{{base_url}}/orders/:id",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderNumber\":\"Maybell_Bednar\",\"userId\":\"67dc1e22f5dfe5005f6c165d\",\"totalAmount\":65,\"status\":\"completed\",\"createdBy\":\"67dc1e22f5dfe5005f6c165e\",\"createdAt\":\"2025-03-20T00:02:09.549Z\",\"updatedAt\":\"2025-03-20T06:53:51.295Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Delete order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}/orders/:id",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderNumber\":\"Maybell_Bednar\",\"userId\":\"67dc1e22f5dfe5005f6c165d\",\"totalAmount\":65,\"status\":\"completed\",\"createdBy\":\"67dc1e22f5dfe5005f6c165e\",\"createdAt\":\"2025-03-20T00:02:09.549Z\",\"updatedAt\":\"2025-03-20T06:53:51.295Z\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "OrderItem",
+      "item": [
+        {
+          "name": "Retrieve orderitem",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/orderitems/:id",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderId\":\"67dc1e22f5dfe5005f6c165a\",\"productId\":\"67dc1e22f5dfe5005f6c165b\",\"quantity\":32,\"price\":70,\"createdBy\":\"67dc1e22f5dfe5005f6c165c\",\"createdAt\":\"2025-03-20T12:59:10.495Z\",\"updatedAt\":\"2025-03-19T20:56:31.241Z\"}"
+            }
+          }
+        },
+        {
+          "name": "List orderitems",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/orderitems",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderId\":\"67dc1e22f5dfe5005f6c165a\",\"productId\":\"67dc1e22f5dfe5005f6c165b\",\"quantity\":32,\"price\":70,\"createdBy\":\"67dc1e22f5dfe5005f6c165c\",\"createdAt\":\"2025-03-20T12:59:10.495Z\",\"updatedAt\":\"2025-03-19T20:56:31.241Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Create orderitem",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": "{{base_url}}/orderitems",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderId\":\"67dc1e22f5dfe5005f6c165a\",\"productId\":\"67dc1e22f5dfe5005f6c165b\",\"quantity\":32,\"price\":70,\"createdBy\":\"67dc1e22f5dfe5005f6c165c\",\"createdAt\":\"2025-03-20T12:59:10.495Z\",\"updatedAt\":\"2025-03-19T20:56:31.241Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Update orderitem",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "url": "{{base_url}}/orderitems/:id",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderId\":\"67dc1e22f5dfe5005f6c165a\",\"productId\":\"67dc1e22f5dfe5005f6c165b\",\"quantity\":32,\"price\":70,\"createdBy\":\"67dc1e22f5dfe5005f6c165c\",\"createdAt\":\"2025-03-20T12:59:10.495Z\",\"updatedAt\":\"2025-03-19T20:56:31.241Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Delete orderitem",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}/orderitems/:id",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"orderId\":\"67dc1e22f5dfe5005f6c165a\",\"productId\":\"67dc1e22f5dfe5005f6c165b\",\"quantity\":32,\"price\":70,\"createdBy\":\"67dc1e22f5dfe5005f6c165c\",\"createdAt\":\"2025-03-20T12:59:10.495Z\",\"updatedAt\":\"2025-03-19T20:56:31.241Z\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "PasswordReset",
+      "item": [
+        {
+          "name": "Verify token",
+          "request": {
+            "auth": null,
+            "method": "GET",
+            "url": "{{base_url}}/password-resets/:token",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        },
+        {
+          "name": "Verify token",
+          "request": {
+            "auth": null,
+            "method": "GET",
+            "url": "{{base_url}}/password-resets/:token",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        },
+        {
+          "name": "Send email",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{master_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": "{{base_url}}/password-resets",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        },
+        {
+          "name": "Send email",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{master_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": "{{base_url}}/password-resets",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        },
+        {
+          "name": "Submit password",
+          "request": {
+            "auth": null,
+            "method": "PUT",
+            "url": "{{base_url}}/password-resets/:token",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        },
+        {
+          "name": "Submit password",
+          "request": {
+            "auth": null,
+            "method": "PUT",
+            "url": "{{base_url}}/password-resets/:token",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Product",
+      "item": [
+        {
+          "name": "Retrieve product",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/products/:id",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Jimmie.Sipes80\",\"description\":\"Tristian_Welch\",\"price\":70,\"categoryId\":\"67dc1e22f5dfe5005f6c165f\",\"stock\":80,\"imageUrl\":\"Cali_Baumbach52\",\"createdBy\":\"67dc1e22f5dfe5005f6c1660\",\"createdAt\":\"2025-03-20T04:20:04.144Z\",\"updatedAt\":\"2025-03-20T04:36:49.098Z\"}"
+            }
+          }
+        },
+        {
+          "name": "List products",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/products",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Jimmie.Sipes80\",\"description\":\"Tristian_Welch\",\"price\":70,\"categoryId\":\"67dc1e22f5dfe5005f6c165f\",\"stock\":80,\"imageUrl\":\"Cali_Baumbach52\",\"createdBy\":\"67dc1e22f5dfe5005f6c1660\",\"createdAt\":\"2025-03-20T04:20:04.144Z\",\"updatedAt\":\"2025-03-20T04:36:49.098Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Create product",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": "{{base_url}}/products",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Jimmie.Sipes80\",\"description\":\"Tristian_Welch\",\"price\":70,\"categoryId\":\"67dc1e22f5dfe5005f6c165f\",\"stock\":80,\"imageUrl\":\"Cali_Baumbach52\",\"createdBy\":\"67dc1e22f5dfe5005f6c1660\",\"createdAt\":\"2025-03-20T04:20:04.144Z\",\"updatedAt\":\"2025-03-20T04:36:49.098Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Update product",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "url": "{{base_url}}/products/:id",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Jimmie.Sipes80\",\"description\":\"Tristian_Welch\",\"price\":70,\"categoryId\":\"67dc1e22f5dfe5005f6c165f\",\"stock\":80,\"imageUrl\":\"Cali_Baumbach52\",\"createdBy\":\"67dc1e22f5dfe5005f6c1660\",\"createdAt\":\"2025-03-20T04:20:04.144Z\",\"updatedAt\":\"2025-03-20T04:36:49.098Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Delete product",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}/products/:id",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Jimmie.Sipes80\",\"description\":\"Tristian_Welch\",\"price\":70,\"categoryId\":\"67dc1e22f5dfe5005f6c165f\",\"stock\":80,\"imageUrl\":\"Cali_Baumbach52\",\"createdBy\":\"67dc1e22f5dfe5005f6c1660\",\"createdAt\":\"2025-03-20T04:20:04.144Z\",\"updatedAt\":\"2025-03-20T04:36:49.098Z\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Retrieve user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/users/:id",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"emie.huels\",\"password\":\"Augustus_Osinski46\",\"role\":\"user\",\"isConfirmed\":true,\"name\":\"Jailyn_Doyle\",\"isEnabled\":false,\"lastLogin\":\"2025-03-20T05:21:52.907Z\",\"preLastLogin\":\"2025-03-20T00:31:22.646Z\",\"isDeleted\":false,\"devices\":[{\"os\":\"Ernesto.Ondricka\",\"token\":\"Clemmie_Daugherty40\"},{\"os\":\"Alden20\",\"token\":\"Guiseppe.Stokes\"}],\"createdAt\":\"2025-03-19T15:16:15.404Z\",\"updatedAt\":\"2025-03-19T20:43:37.868Z\"}"
+            }
+          }
+        },
+        {
+          "name": "List users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/users",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"emie.huels\",\"password\":\"Augustus_Osinski46\",\"role\":\"user\",\"isConfirmed\":true,\"name\":\"Jailyn_Doyle\",\"isEnabled\":false,\"lastLogin\":\"2025-03-20T05:21:52.907Z\",\"preLastLogin\":\"2025-03-20T00:31:22.646Z\",\"isDeleted\":false,\"devices\":[{\"os\":\"Ernesto.Ondricka\",\"token\":\"Clemmie_Daugherty40\"},{\"os\":\"Alden20\",\"token\":\"Guiseppe.Stokes\"}],\"createdAt\":\"2025-03-19T15:16:15.404Z\",\"updatedAt\":\"2025-03-19T20:43:37.868Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Retrieve current user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}/users/me",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"emie.huels\",\"password\":\"Augustus_Osinski46\",\"role\":\"user\",\"isConfirmed\":true,\"name\":\"Jailyn_Doyle\",\"isEnabled\":false,\"lastLogin\":\"2025-03-20T05:21:52.907Z\",\"preLastLogin\":\"2025-03-20T00:31:22.646Z\",\"isDeleted\":false,\"devices\":[{\"os\":\"Ernesto.Ondricka\",\"token\":\"Clemmie_Daugherty40\"},{\"os\":\"Alden20\",\"token\":\"Guiseppe.Stokes\"}],\"createdAt\":\"2025-03-19T15:16:15.404Z\",\"updatedAt\":\"2025-03-19T20:43:37.868Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Create user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": "{{base_url}}/users",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"emie.huels\",\"password\":\"Augustus_Osinski46\",\"role\":\"user\",\"isConfirmed\":true,\"name\":\"Jailyn_Doyle\",\"isEnabled\":false,\"lastLogin\":\"2025-03-20T05:21:52.907Z\",\"preLastLogin\":\"2025-03-20T00:31:22.646Z\",\"isDeleted\":false,\"devices\":[{\"os\":\"Ernesto.Ondricka\",\"token\":\"Clemmie_Daugherty40\"},{\"os\":\"Alden20\",\"token\":\"Guiseppe.Stokes\"}],\"createdAt\":\"2025-03-19T15:16:15.404Z\",\"updatedAt\":\"2025-03-19T20:43:37.868Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Update user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "url": "{{base_url}}/users/:id",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"emie.huels\",\"password\":\"Augustus_Osinski46\",\"role\":\"user\",\"isConfirmed\":true,\"name\":\"Jailyn_Doyle\",\"isEnabled\":false,\"lastLogin\":\"2025-03-20T05:21:52.907Z\",\"preLastLogin\":\"2025-03-20T00:31:22.646Z\",\"isDeleted\":false,\"devices\":[{\"os\":\"Ernesto.Ondricka\",\"token\":\"Clemmie_Daugherty40\"},{\"os\":\"Alden20\",\"token\":\"Guiseppe.Stokes\"}],\"createdAt\":\"2025-03-19T15:16:15.404Z\",\"updatedAt\":\"2025-03-19T20:43:37.868Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Update password",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "{{basic_password}}",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "{{basic_username}}",
+                  "type": "string"
+                },
+                {
+                  "key": "showPassword",
+                  "value": false,
+                  "type": "boolean"
+                }
+              ],
+              "bearer": []
+            },
+            "method": "PUT",
+            "url": "{{base_url}}/users/:id/password",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"emie.huels\",\"password\":\"Augustus_Osinski46\",\"role\":\"user\",\"isConfirmed\":true,\"name\":\"Jailyn_Doyle\",\"isEnabled\":false,\"lastLogin\":\"2025-03-20T05:21:52.907Z\",\"preLastLogin\":\"2025-03-20T00:31:22.646Z\",\"isDeleted\":false,\"devices\":[{\"os\":\"Ernesto.Ondricka\",\"token\":\"Clemmie_Daugherty40\"},{\"os\":\"Alden20\",\"token\":\"Guiseppe.Stokes\"}],\"createdAt\":\"2025-03-19T15:16:15.404Z\",\"updatedAt\":\"2025-03-19T20:43:37.868Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Reset other users password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "url": "{{base_url}}/users/:id/passwordReset",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"emie.huels\",\"password\":\"Augustus_Osinski46\",\"role\":\"user\",\"isConfirmed\":true,\"name\":\"Jailyn_Doyle\",\"isEnabled\":false,\"lastLogin\":\"2025-03-20T05:21:52.907Z\",\"preLastLogin\":\"2025-03-20T00:31:22.646Z\",\"isDeleted\":false,\"devices\":[{\"os\":\"Ernesto.Ondricka\",\"token\":\"Clemmie_Daugherty40\"},{\"os\":\"Alden20\",\"token\":\"Guiseppe.Stokes\"}],\"createdAt\":\"2025-03-19T15:16:15.404Z\",\"updatedAt\":\"2025-03-19T20:43:37.868Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Delete user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}/users/:id",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"emie.huels\",\"password\":\"Augustus_Osinski46\",\"role\":\"user\",\"isConfirmed\":true,\"name\":\"Jailyn_Doyle\",\"isEnabled\":false,\"lastLogin\":\"2025-03-20T05:21:52.907Z\",\"preLastLogin\":\"2025-03-20T00:31:22.646Z\",\"isDeleted\":false,\"devices\":[{\"os\":\"Ernesto.Ondricka\",\"token\":\"Clemmie_Daugherty40\"},{\"os\":\"Alden20\",\"token\":\"Guiseppe.Stokes\"}],\"createdAt\":\"2025-03-19T15:16:15.404Z\",\"updatedAt\":\"2025-03-19T20:43:37.868Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Delete current user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "basic": [],
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}/users/me",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"emie.huels\",\"password\":\"Augustus_Osinski46\",\"role\":\"user\",\"isConfirmed\":true,\"name\":\"Jailyn_Doyle\",\"isEnabled\":false,\"lastLogin\":\"2025-03-20T05:21:52.907Z\",\"preLastLogin\":\"2025-03-20T00:31:22.646Z\",\"isDeleted\":false,\"devices\":[{\"os\":\"Ernesto.Ondricka\",\"token\":\"Clemmie_Daugherty40\"},{\"os\":\"Alden20\",\"token\":\"Guiseppe.Stokes\"}],\"createdAt\":\"2025-03-19T15:16:15.404Z\",\"updatedAt\":\"2025-03-19T20:43:37.868Z\"}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
