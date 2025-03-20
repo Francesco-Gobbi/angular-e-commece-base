@@ -4,6 +4,11 @@ export type User = {
   email: string;
   password: string;
   role: string;
+  isConfirmed: boolean;
+  isEnabled: boolean;
+  isDeleted: boolean;
+  lastLogin: Date;
+  preLastLogin: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -12,9 +17,9 @@ export type Products = {
   _id: string;
   name: string;
   description: string;
-  price: string;
+  price: number;
   categoryId: string;
-  stock: string;
+  stock: number;
   imageUrl: string;
   createdAt: Date;
   updatedAt: Date;
@@ -33,9 +38,15 @@ export type Orders = {
   orderNumber: string;
   userId: string;
   totalAmount: number;
-  status: string;
+  status: OrderStatuses;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export enum OrderStatuses {
+  PENDING = 'pending',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
 }
 
 export type OrderItems = {
