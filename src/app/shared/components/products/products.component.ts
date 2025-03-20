@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable, switchMap, filter } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { ProductService } from '../../core/services/products/product.service';
+import { ProductService } from '../../../core/services/products/product.service';
 
 interface Product {
   id: number;

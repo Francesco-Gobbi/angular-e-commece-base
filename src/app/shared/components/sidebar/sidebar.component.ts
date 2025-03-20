@@ -25,13 +25,9 @@ import { RouterModule } from '@angular/router';
 })
 export class SidebarComponent {
   @ViewChild('sidenav') sidenav!: MatSidenav;
-  isSidenavOpen: boolean = false; // Stato iniziale chiuso
+  isSidenavOpen: boolean = true; // Sidebar aperta di default
 
   toggleSidenav() {
     this.isSidenavOpen = !this.isSidenavOpen;
-  }
-
-  closeSidenav() {
-    this.isSidenavOpen = false;
   }
 }
