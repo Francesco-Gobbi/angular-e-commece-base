@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ApiService {
-  private baseUrl = 'https://server-angular-jac.dev.aws.r-s.cloud/api';
+  private baseUrl = '';
 
   private defaultHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
