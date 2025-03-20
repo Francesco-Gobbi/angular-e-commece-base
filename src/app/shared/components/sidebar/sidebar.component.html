@@ -1,0 +1,28 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Navbar superiore con bottone per aprire/chiudere -->
+  <mat-toolbar color="primary">
+    <button mat-icon-button (click)="toggleSidenav()">
+      <mat-icon>{{ isSidenavOpen ? 'close' : 'menu' }}</mat-icon>
+    </button>
+    <span>MyApp</span>
+  </mat-toolbar>
+
+  <!-- Sidebar laterale -->
+  <mat-sidenav #sidenav mode="side" [(opened)]="isSidenavOpen">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/" (click)="closeSidenav()">Home</a>
+      <a mat-list-item routerLink="/products" (click)="closeSidenav()">Prodotti</a>
+      <a mat-list-item routerLink="/auth" (click)="closeSidenav()">Auth</a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Contenuto principale -->
+  <mat-sidenav-content class="content">
+    <div class="toggle-container">
+      <button mat-raised-button (click)="toggleSidenav()">
+        {{ isSidenavOpen ? 'Chiudi Sidebar' : 'Apri Sidebar' }}
+      </button>
+    </div>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
