@@ -1,9 +1,11 @@
-<h2>Product List</h2>
-<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="shopping-add"><button
-    onclick="{}">pls</button></mat-icon>
+<h2>Cart List</h2>
+
+<button mat-icon-button color="primary" (click)="goBack()">
+  <mat-icon>shopping_cart</mat-icon>
+</button>
 
 <ul>
-  <li *ngFor="let product of products$ | async">
+  <li *ngFor="let product of cart$ | async" class="product-item">
     <h3>{{ product.name }}</h3>
     <p>{{ product.description }}</p>
     <strong>Price: {{ product.price }}€</strong>
@@ -13,6 +15,5 @@
         {{ product.inStock ? 'Available' : 'Out of stock' }}
       </span>
     </p>
-    <button (click)="goToDetail(product.id)">View Details</button>
   </li>
 </ul>

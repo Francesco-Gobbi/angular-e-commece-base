@@ -1,0 +1,48 @@
+<div class="header">
+  <h2>Product List</h2>
+  <button mat-icon-button color="primary" (click)="goToCart()">
+    <mat-icon>shopping_cart</mat-icon>
+  </button>
+</div>
+
+<table mat-table *ngIf="hasProducts(); else noData">
+  <thead>
+    <tr>
+      <th>Product Name</th>
+      <th>Description</th>
+      <th>Price</th>
+      <th>Stock Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let product of products">
+      <td>{{ product.name }}</td>
+      <td>{{ product.description }}</td>
+      <td>{{ product.price }}€</td>
+      <td>
+        <span [style.color]="product.stock > 0 ? 'green' : 'red'">
+          {{ product.stock > 0 ? 'Available' : 'Out of stock' }}
+        </span>
+      </td>
+      <td>
+        <button mat-raised-button color="accent" (click)="goToDetail(product._id)">View Details</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #noData>
+  <table mat-table>
+    <thead>
+      <tr>
+        <th colspan="5">No products found</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="5" class="no-products-message">Nessun elemento trovato</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>

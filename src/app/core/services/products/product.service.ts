@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '../api/api.service';
 import { Observable } from 'rxjs';
-
 import { map } from 'rxjs/operators';
-import { Product } from '../../models/product.model'; // Assumendo che tu abbia un'interfaccia Product
+import { Product } from '../../models/product.model';
 
 @Injectable({
   providedIn: 'root',

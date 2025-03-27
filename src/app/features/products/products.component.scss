@@ -1,0 +1,85 @@
+/* Styling per il contenitore header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.header button {
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  padding: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.header button:hover {
+  background-color: #0056b3;
+}
+
+/* Styling della tabella */
+table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+th,
+td {
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 1rem;
+  color: #333;
+}
+
+th {
+  background-color: #007bff;
+  color: white;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+td {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Styling per il messaggio "No products found" */
+.no-products-message {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 20px;
+  color: #555;
+}
+
+/* Styling del pulsante "View Details" */
+button.mat-raised-button {
+  background-color: #4caf50;
+  color: white;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+button.mat-raised-button:hover {
+  background-color: #45a049;
+}
