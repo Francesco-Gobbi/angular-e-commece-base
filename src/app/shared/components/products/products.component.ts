@@ -15,8 +15,6 @@ interface Product {
 @Component({
   selector: 'app-product-list',
   templateUrl: './products.component.html',
-  standalone: true,
-  imports: [CommonModule],
 })
 export class ProductListComponent implements OnInit {
   products$!: Observable<Product[]>;
@@ -25,10 +23,12 @@ export class ProductListComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private productService: ProductService
-  ) {}
+  ) {
+    console.log('in');
+  }
 
   ngOnInit() {
-    this.products$ = this.productService.getProducts() as Observable<Product[]>;
+    console.log('init');
   }
 
   goToDetail(id: number) {

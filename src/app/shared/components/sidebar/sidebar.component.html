@@ -2,9 +2,9 @@
   <!-- Sidebar laterale fissa -->
   <mat-sidenav #sidenav mode="side" [(opened)]="isSidenavOpen">
     <mat-nav-list>
-      <a mat-list-item routerLink="/">Home</a>
-      <a mat-list-item routerLink="/products">Prodotti</a>
-      <a mat-list-item routerLink="/auth">Auth</a>
+      <!-- <a mat-list-item routerLink="/">Home</a> -->
+      <a mat-list-item routerLink="/main/products">Prodotti</a>
+      <a mat-list-item routerLink="/main/auth">Auth</a>
     </mat-nav-list>
   </mat-sidenav>
 
@@ -15,6 +15,5 @@
       </button>
       <span>MyApp</span>
     </mat-toolbar>
-    <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
