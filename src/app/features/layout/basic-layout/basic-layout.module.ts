@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { SidebarComponent } from '../../../shared/components/sidebar/sidebar.component';
 import { ProductListComponent } from '../../../shared/components/products/products.component';
 
 export const routes: Routes = [

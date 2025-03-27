@@ -1,4 +1,20 @@
-<app-sidebar></app-sidebar>
-<div>
-  <router-outlet></router-outlet>
-</div>
+<mat-sidenav-container class="sidenav-container">
+
+  <mat-sidenav #sidenav mode="side" [opened]="isDesktop" class="sidebar">
+    <app-sidebar></app-sidebar>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="!isDesktop">
+        <mat-icon>{{ sidenav.opened ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
+      <span>MyApp</span>
+    </mat-toolbar>
+
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
