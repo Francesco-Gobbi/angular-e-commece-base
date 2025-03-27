@@ -1,6 +1,10 @@
 import {Component, inject} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
+import {Store} from "@ngrx/store";
+import {setAuth} from "../../../state/auth/actions";
+import {Observable} from "rxjs";
+import {selectIsLoading} from "../../../state/auth/selectors";
 
 @Component({
   selector: 'app-login-page',
@@ -9,24 +13,25 @@ import {Router} from "@angular/router";
 })
 export class LoginPageComponent {
   private fb = inject(FormBuilder);
-  private router = inject(Router);
+  loading$: Observable<boolean>;
 
   loginForm: FormGroup;
   hidePassword = true;
 
-  constructor() {
+  constructor(private store: Store) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+
+    this.loading$ = this.store.select(selectIsLoading);
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-      console.log('Login attempt:', email);
-
-      this.router.navigate(['/dashboard']);
+      console.log(email, password);
+      this.store.dispatch(setAuth({ email, password }));
     }
   }
 
