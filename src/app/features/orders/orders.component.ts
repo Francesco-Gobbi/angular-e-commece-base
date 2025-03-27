@@ -8,6 +8,7 @@ import { OrderDetailsComponent } from '../order-detail/order-detail.component';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'OrderTable',
@@ -18,6 +19,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatPaginatorModule,
     MatFormFieldModule,
     CommonModule,
+    MatInputModule,
     MatTableModule,
   ]
 })
@@ -36,6 +38,7 @@ export class OrdersTableComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.orderService.getOrders().subscribe({
       next: (orders: Order[]) => {
+        console.log(orders)
         this.dataSource.data = orders;
         this.loading = false;
       },
