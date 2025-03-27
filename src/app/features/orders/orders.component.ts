@@ -1,41 +1,67 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
+import { MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+import { OrdersService, Order } from '../../core/services/orders/orders.service';
+import { OrderDetailsComponent } from '../order-detail/order-detail.component';
+import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { ApiService, Order } from '../../core/services/orders.service';
 
 @Component({
-  selector: 'orders',
-  styleUrl: 'orders.component.scss',
-  templateUrl: 'orders.component.html',
+  selector: 'OrderTable',
+  templateUrl: './orders.component.html',
+  styleUrls: ['./orders.component.scss'],
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule],
+  imports: [
+    MatPaginatorModule,
+    MatFormFieldModule,
+    CommonModule,
+    MatTableModule,
+  ]
 })
-export class OrdersComponent implements AfterViewInit {
-  displayedColumns: string[] = ['id', 'order', 'price', 'user'];
+export class OrdersTableComponent implements OnInit, AfterViewInit {
+  loading = true;
+  error: string | null = null;
+  
+  displayedColumns: string[] = ['id', 'orderNumber', 'totalAmount', 'status', 'actions'];
   dataSource = new MatTableDataSource<Order>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private apiService: ApiService) { }
+  constructor(private orderService: OrdersService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.apiService.orders$.subscribe(orders => {
-      this.dataSource.data = orders;
+    this.orderService.getOrders().subscribe({
+      next: (orders: Order[]) => {
+        this.dataSource.data = orders;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Errore nel caricamento degli ordini';
+        this.loading = false;
+      }
     });
-    this.apiService.fetchOrders();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  applyFilter(event: Event) {
+  applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.dataSource.filter = filterValue;
+  }
+
+  openOrderDetails(order: Order): void {
+    this.orderService.getOrderById(order.id).subscribe(orderDetails => {
+      this.dialog.open(OrderDetailsComponent, {
+        width: '400px',
+        data: orderDetails
+      });
+    });
   }
 }

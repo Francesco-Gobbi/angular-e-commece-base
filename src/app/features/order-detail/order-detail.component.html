@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Order Details</h1>
+<div mat-dialog-content>
+  <p><strong>ID:</strong> {{ data.id }}</p>
+  <p><strong>Order Number:</strong> {{ data.orderNumber }}</p>
+  <p><strong>Total Amount:</strong> {{ data.totalAmount }}</p>
+  <p><strong>Status:</strong> {{ data.status }}</p>
+  <p><strong>Created At:</strong> {{ data.createdAt }}</p>
+  <p><strong>Updated At:</strong> {{ data.updatedAt }}</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="closeDialog()">Close</button>
+</div>

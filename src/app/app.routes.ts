@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
 import { ProductListComponent } from './shared/components/products/products.component';
 import { NotFoundComponent } from './features/not-found/not-found.component';
-import { OrdersComponent } from './features/orders/orders.component';
-import { AppComponent } from './app.component';
+import { OrdersTableComponent } from './features/orders/orders.component';
 import { LayoutComponent } from './shared/components/layout/layout.component';
 
 export const routes: Routes = [
@@ -15,7 +14,7 @@ export const routes: Routes = [
           (m) => m.BasicLayoutModule
         ),
     },
-    { path: 'orders', component: OrdersComponent },
+    { path: 'orders', component: OrdersTableComponent },
     { path: 'products', component: ProductListComponent },
     { path: '**', component: NotFoundComponent },
 ];

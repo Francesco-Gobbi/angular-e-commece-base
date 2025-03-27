@@ -1,0 +1,16 @@
+<h2>Product List</h2>
+
+<ul>
+  <li *ngFor="let product of products$ | async">
+    <h3>{{ product.name }}</h3>
+    <p>{{ product.description }}</p>
+    <strong>Price: {{ product.price }}€</strong>
+    <p>
+      Status:
+      <span [style.color]="product.inStock ? 'green' : 'red'">
+        {{ product.inStock ? 'Available' : 'Out of stock' }}
+      </span>
+    </p>
+    <button (click)="goToDetail(product.id)">View Details</button>
+  </li>
+</ul>
