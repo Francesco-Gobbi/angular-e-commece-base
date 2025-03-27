@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { ProductListComponent } from './shared/components/products/products.component';
 import { NotFoundComponent } from './features/not-found/not-found.component';
 import { LayoutComponent } from './shared/components/layout/layout.component';
 import {authGuard} from "./core/guards/auth.guard";
@@ -21,6 +20,5 @@ export const routes: Routes = [
         (m) => m.AuthModule
       ),
   },
-  // {}
   { path: '**', component: NotFoundComponent },
 ];
