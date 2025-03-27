@@ -17,3 +17,8 @@ export const selectIsAuthenticated = createSelector(
   selectAuthState,
   (state: AuthState) => !!state.token
 );
+
+export const selectIsLoading = createSelector(
+  selectAuthState,
+  (state: AuthState) => state.loading
+);

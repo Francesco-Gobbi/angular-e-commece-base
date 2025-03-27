@@ -21,12 +21,14 @@ export const authReducer = createReducer(
   on(AuthActions.setAuth, (state: AuthState) => ({
     ...state,
     loading: true,
+    error: null
   })),
   on(AuthActions.setAuthSuccess, (state: AuthState, { user, token }: { user: User, token: string }) => ({
     ...state,
     user,
     token,
-    loading: false
+    loading: false,
+    error: null
   })),
   on(AuthActions.setAuthFailure, (state: AuthState, { error }: { error: any }) => ({
     ...state,

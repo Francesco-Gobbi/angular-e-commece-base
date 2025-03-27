@@ -3,6 +3,7 @@ import { ProductListComponent } from './shared/components/products/products.comp
 import { NotFoundComponent } from './features/not-found/not-found.component';
 import { LayoutComponent } from './shared/components/layout/layout.component';
 import {authGuard} from "./core/guards/auth.guard";
+import {unprotectedGuard} from "./core/guards/unprotected.guard";
 
 export const routes: Routes = [
   {
@@ -16,11 +17,11 @@ export const routes: Routes = [
   },
   {
     path: 'auth',
+    canActivate: [unprotectedGuard],
     loadChildren: () =>
       import('./features/auth/auth.module').then(
         (m) => m.AuthModule
       ),
   },
-  // {}
   { path: '**', component: NotFoundComponent },
 ];

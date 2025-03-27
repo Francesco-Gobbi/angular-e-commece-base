@@ -3,6 +3,7 @@ import { User } from '../../shared/types';
 
 export const setAuth = createAction(
   '[Auth] Auth',
+  props<{ email: string; password: string }>()
 );
 export const setAuthSuccess = createAction(
   '[Auth] Auth Success',
