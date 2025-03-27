@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable, switchMap, filter } from 'rxjs';
-import { CommonModule } from '@angular/common';
 import { ProductService } from '../../../core/services/products/product.service';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 interface Product {
   id: number;
@@ -15,6 +16,8 @@ interface Product {
 @Component({
   selector: 'app-product-list',
   templateUrl: './products.component.html',
+  standalone: true,
+  imports: [MatIconModule, CommonModule],
 })
 export class ProductListComponent implements OnInit {
   products$!: Observable<Product[]>;
