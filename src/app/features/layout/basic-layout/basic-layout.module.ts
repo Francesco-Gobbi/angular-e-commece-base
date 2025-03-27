@@ -10,13 +10,13 @@ export const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [ProductListComponent],
   exports: [RouterModule],
   imports: [
     RouterModule.forChild(routes),
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    ProductListComponent,
   ],
 })
 export class BasicLayoutModule {}
