@@ -1,20 +1,24 @@
 import { Routes } from '@angular/router';
-import { ProductListComponent } from './shared/components/products/products.component';
 import { NotFoundComponent } from './features/not-found/not-found.component';
-import { OrdersTableComponent } from './features/orders/orders.component';
 import { LayoutComponent } from './shared/components/layout/layout.component';
+import {authGuard} from "./core/guards/auth.guard";
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'main', pathMatch: 'full' },
-    {
-      path: 'main',
-      component: LayoutComponent,
-      loadChildren: () =>
-        import('./features/layout/basic-layout/basic-layout.module').then(
-          (m) => m.BasicLayoutModule
-        ),
-    },
-    { path: 'orders', component: OrdersTableComponent },
-    { path: 'products', component: ProductListComponent },
-    { path: '**', component: NotFoundComponent },
+  {
+    path: '',
+    component: LayoutComponent,
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/layout/basic-layout/basic-layout.module').then(
+        (m) => m.BasicLayoutModule
+      ),
+  },
+  {
+    path: 'auth',
+    loadChildren: () =>
+      import('./features/auth/auth.module').then(
+        (m) => m.AuthModule
+      ),
+  },
+  { path: '**', component: NotFoundComponent },
 ];

@@ -1,20 +1,4 @@
-<mat-sidenav-container class="sidenav-container">
-  <!-- Sidebar laterale fissa -->
-  <mat-sidenav #sidenav mode="side" [(opened)]="isSidenavOpen">
-    <mat-nav-list>
-      <!-- <a mat-list-item routerLink="/">Home</a> -->
-      <a mat-list-item routerLink="/main/products">Prodotti</a>
-      <a mat-list-item routerLink="/main/auth">Auth</a>
-      <a mat-list-item routerLink="/main/orders">Ordini</a>
-    </mat-nav-list>
-  </mat-sidenav>
-
-  <mat-sidenav-content class="content">
-    <mat-toolbar color="primary">
-      <button mat-icon-button (click)="toggleSidenav()">
-        <mat-icon>{{ isSidenavOpen ? 'menu_open' : 'menu' }}</mat-icon>
-      </button>
-      <span>MyApp</span>
-    </mat-toolbar>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+<mat-nav-list>
+  <a mat-list-item routerLink="/main/products">Prodotti</a>
+  <a mat-list-item routerLink="/main/auth">Auth</a>
+</mat-nav-list>

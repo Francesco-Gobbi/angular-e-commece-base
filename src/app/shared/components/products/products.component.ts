@@ -23,12 +23,10 @@ export class ProductListComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private productService: ProductService
-  ) {
-
-  }
+  ) {}
 
   ngOnInit() {
-    
+    this.products$ = this.productService.getProducts() as Observable<Product[]>;
   }
 
   goToDetail(id: number) {

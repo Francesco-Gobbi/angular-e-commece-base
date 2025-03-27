@@ -15,9 +15,7 @@ export interface Order {
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
-  private endpoint = 'orders';
-  private ordersSubject = new BehaviorSubject<Order[]>([]);
-  orders$ = this.ordersSubject.asObservable();
+  private endpoint = '/api/orders';
 
   constructor(private http: ApiService) {}
 
