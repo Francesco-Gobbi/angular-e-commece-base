@@ -7,9 +7,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
-  selector: 'app-sidebar',
+  selector: 'app-layout',
   standalone: true,
   imports: [
     CommonModule,
@@ -18,16 +19,10 @@ import { RouterModule } from '@angular/router';
     MatToolbarModule,
     MatIconModule,
     MatListModule,
+    SidebarComponent,
     MatButtonModule,
   ],
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss'],
+  templateUrl: './layout.component.html',
+  styleUrls: ['./layout.component.scss'],
 })
-export class SidebarComponent {
-  @ViewChild('sidenav') sidenav!: MatSidenav;
-  isSidenavOpen: boolean = true; // Sidebar aperta di default
-
-  toggleSidenav() {
-    this.isSidenavOpen = !this.isSidenavOpen;
-  }
-}
+export class LayoutComponent {}
