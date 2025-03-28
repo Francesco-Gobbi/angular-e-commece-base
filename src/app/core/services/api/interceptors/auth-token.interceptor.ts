@@ -8,13 +8,12 @@ import { AuthState } from "../../../../state/auth/reducers";
 export const authTokenInterceptor: HttpInterceptorFn = (req, next) => {
   const store = inject(Store<{ auth: AuthState }>);
 
-  if (req.headers.has('X-Master-Key')) {
-    const masterKeyRequest = req.clone({
-      headers: req.headers.delete('X-Master-Key')
-    });
-    return next(masterKeyRequest);
-  }
-
+  // if (req.headers.has('X-Master-Key')) {
+  //   const masterKeyRequest = req.clone({
+  //     headers: req.headers.delete('X-Master-Key')
+  //   });
+  //   return next(masterKeyRequest);
+  // }
   return store.select(selectToken).pipe(
     take(1),
     switchMap((token) => {
