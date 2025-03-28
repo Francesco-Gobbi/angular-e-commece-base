@@ -12,7 +12,6 @@ export class MasterApiService {
   private defaultHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${this.masterKey}`,
-    'X-Master-Key': 'true'
   });
 
   constructor(private http: HttpClient) {}
