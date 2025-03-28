@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../../environments/environment.development';
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {Observable} from "rxjs";
+
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class ApiService {
+export class AuthApiService {
   private baseUrl = environment.apiUrl;
+
 
   private defaultHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
-    Authorization: 'Bearer YOUR_TOKEN_HERE',
   });
 
   constructor(private http: HttpClient) {}

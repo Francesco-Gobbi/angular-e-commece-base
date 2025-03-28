@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
-import { ApiService } from '../api/api.service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AuthApiService } from '../api/auth-api/auth-api.service';
 
 export interface Order {
   id: string;
@@ -15,9 +15,9 @@ export interface Order {
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
-  private endpoint = '/api/orders';
+  private endpoint = '/orders';
 
-  constructor(private http: ApiService) {}
+  constructor(private http: AuthApiService) {}
 
   getOrders(): Observable<Order[]> {
     return this.http

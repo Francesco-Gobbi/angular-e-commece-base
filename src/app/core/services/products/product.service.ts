@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '../api/api.service';
+import { AuthApiService } from '../api/auth-api/auth-api.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Product } from '../../models/product.model';
@@ -8,9 +8,9 @@ import { Product } from '../../models/product.model';
   providedIn: 'root',
 })
 export class ProductService {
-  private endpoint = '/api/products';
+  private endpoint = '/products';
 
-  constructor(private http: ApiService) {}
+  constructor(private http: AuthApiService) {}
 
   getProducts(): Observable<Product[]> {
     return this.http
