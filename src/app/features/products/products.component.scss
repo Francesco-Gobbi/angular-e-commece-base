@@ -1,85 +1,51 @@
-/* Styling per il contenitore header */
-.header {
+.orders-container {
+  height: calc(100vh - 30%);
+  padding: 0 10px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  background-color: #f4f4f4;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
-.header h2 {
-  margin: 0;
-  font-size: 1.8rem;
-  color: #333;
+.filter-container {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0;
 }
 
-.header button {
-  background-color: #007bff;
-  color: white;
-  border-radius: 50%;
-  padding: 10px;
-  transition: background-color 0.3s ease;
+.filter-container button {
+  margin-bottom: 1%;
+  width: auto;
+  border: none;
+  background-color: transparent;
 }
 
-.header button:hover {
-  background-color: #0056b3;
+.filter-input {
+  width: 250px;
 }
 
-/* Styling della tabella */
-table {
-  width: 100%;
-  margin: 20px 0;
-  border-collapse: collapse;
-  border-radius: 8px;
+.table-container {
+  flex: 1;
+  margin-bottom: 5%;
+  border-radius: 5px;
+  background-color: #ffffff;
+  display: flex;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  padding: 16px;
 }
 
-th,
-td {
-  padding: 12px 15px;
-  text-align: left;
-  font-size: 1rem;
-  color: #333;
+table {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 8px;
 }
 
-th {
-  background-color: #007bff;
-  color: white;
-}
+@media (max-width: 508px) {
+  .filter-input {
+    width: 100%;
+  }
 
-tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-tbody tr:hover {
-  background-color: #f1f1f1;
-}
-
-td {
-  border-bottom: 1px solid #ddd;
-}
-
-/* Styling per il messaggio "No products found" */
-.no-products-message {
-  text-align: center;
-  font-size: 1.2rem;
-  padding: 20px;
-  color: #555;
-}
-
-/* Styling del pulsante "View Details" */
-button.mat-raised-button {
-  background-color: #4caf50;
-  color: white;
-  border-radius: 4px;
-  padding: 8px 16px;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-button.mat-raised-button:hover {
-  background-color: #45a049;
+  .table-container {
+    max-height: calc(100vh - 150px);
+  }
 }
