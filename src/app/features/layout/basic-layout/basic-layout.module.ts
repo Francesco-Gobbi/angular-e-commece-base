@@ -5,11 +5,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { ProductListComponent } from '../../products/products.component';
 import { OrdersTableComponent } from '../../orders/orders.component';
 import { CartComponent } from '../../carts/carts.component';
+import { ProductDetailComponent } from '../../product-detail/products.component';
 import {ProfilePageComponent} from "../../profile/profile-page/profile-page.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: 'products', pathMatch: 'full' },
   { path: 'products', component: ProductListComponent },
+  { path: 'product-detail/:id', component: ProductDetailComponent },
   { path: 'orders', component: OrdersTableComponent },
   { path: 'carts', component: CartComponent },
   { path: 'profile', component: ProfilePageComponent }

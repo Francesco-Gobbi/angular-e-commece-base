@@ -5,14 +5,14 @@
 </button>
 
 <ul>
-  <li *ngFor="let product of cart$ | async" class="product-item">
-    <h3>{{ product.name }}</h3>
-    <p>{{ product.description }}</p>
-    <strong>Price: {{ product.price }}€</strong>
+  <li *ngFor="let item of items$ | async" class="product-item">
+    <h3>{{ item.product.name }}</h3>
+    <p>{{ item.product.description }}</p>
+    <strong>Price: {{ item.product.price * item.quantity }}€</strong>
     <p>
       Status:
-      <span [style.color]="product.inStock ? 'green' : 'red'">
-        {{ product.inStock ? 'Available' : 'Out of stock' }}
+      <span [style.color]="item.quantity ? 'green' : 'red'">
+        {{ item.quantity ? 'Available' : 'Out of stock' }}
       </span>
     </p>
   </li>
