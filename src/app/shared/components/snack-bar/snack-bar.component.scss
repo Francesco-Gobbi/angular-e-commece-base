@@ -1,0 +1,26 @@
+
+:host {
+  display: flex;
+  align-items: center;
+}
+
+.snackbar-success {
+  color: #fff;
+  background-color: #4caf50;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.snackbar-warning {
+  color: #fff;
+  background-color: #ff9800;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.snackbar-danger {
+  color: #fff;
+  background-color: #f44336;
+  padding: 8px;
+  border-radius: 4px;
+}

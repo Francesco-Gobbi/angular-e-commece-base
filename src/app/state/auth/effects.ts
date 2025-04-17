@@ -4,7 +4,7 @@ import { catchError, map, of, switchMap } from 'rxjs';
 import { ApiService } from '../../core/services/api/api/api.service';
 import { setAuth, setAuthSuccess, setAuthFailure } from './actions';
 import { Router } from '@angular/router';
-import {MatSnackBar} from "@angular/material/snack-bar";
+import {SnackBarService} from "../../shared/components/snack-bar/service/snack-bar.service";
 
 @Injectable()
 export class AuthEffects {
@@ -12,7 +12,7 @@ export class AuthEffects {
     private actions$: Actions,
     private apiService: ApiService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBarService: SnackBarService
   ) {}
 
   login$ = createEffect(() =>
@@ -27,10 +27,8 @@ export class AuthEffects {
           catchError((error) => {
             console.error('Login failed:', error);
 
-            this.snackBar.open((error?.error) ? error.error : 'Something went wrong', 'Close', {
-              duration: 1500,
-              panelClass: 'toast-error',
-            });
+            this.snackBarService.openSnackBar((error?.error) ? error.error : 'Something went wrong', 'danger', 2000000);
+
             return of(setAuthFailure({ error }));
           })
         )
@@ -43,10 +41,7 @@ export class AuthEffects {
       ofType(setAuthSuccess),
       map(() => {
         this.router.navigate(['/']);
-        this.snackBar.open('Login successfull', 'Close', {
-          duration: 1500,
-          panelClass: 'toast-success',
-        });
+        this.snackBarService.openSnackBar('Operation completed successfully!', 'success', 200000);
       })
     ),
     { dispatch: false }

@@ -11,7 +11,7 @@ export const authTokenInterceptor: HttpInterceptorFn = (req, next) => {
   return store.select(selectToken).pipe(
     take(1),
     switchMap((token) => {
-      console.log('Adding auth token to request');
+      console.log('authTokenInterceptor token: ', token);
 
       if (token) {
         const modifiedReq = req.clone({
