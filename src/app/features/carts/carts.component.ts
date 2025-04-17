@@ -4,14 +4,10 @@ import { map, Observable, switchMap, filter } from 'rxjs';
 import { ProductService } from '../../core/services/products/product.service';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-
-interface Cart {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  inStock: boolean;
-}
+import { Item } from '../../core/models/cart.model';
+import { Store } from '@ngrx/store';
+import { loadCart } from '../../state/carts/actions';
+import { selectCartItems } from '../../state/carts/selectors';
 
 @Component({
   selector: 'app-product-list',
@@ -20,16 +16,19 @@ interface Cart {
   imports: [MatIconModule, CommonModule],
 })
 export class CartComponent implements OnInit {
-  cart$!: Observable<Cart[]>;
+  items$!: Observable<Item[]>;
 
   constructor(
+    private store: Store,
     private router: Router,
     private route: ActivatedRoute,
     private cartService: ProductService
   ) {}
 
   ngOnInit() {
-    // this.cart$ = this.cartService.getCart() as Observable<Cart[]>;
+    this.store.dispatch(loadCart());
+    this.items$ = this.store.select(selectCartItems);
+    console.log(this, this.items$);
   }
 
   goBack() {

@@ -12,6 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { SnackBarService } from '../../shared/components/snack-bar/service/snack-bar.service';
+import { Store } from '@ngrx/store';
+import { addToCart } from '../../state/carts/actions';
 
 @Component({
   selector: 'app-product-list',
@@ -45,6 +47,7 @@ export class ProductListComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
+    private store: Store,
     private router: Router,
     private productService: ProductService,
     private snackBarService: SnackBarService
@@ -83,9 +86,9 @@ export class ProductListComponent implements OnInit {
     this.router.navigate(['/product-detail', id]);
   }
 
-  addToCart(id: string): void {
+  addElementToCart(product: Product): void {
     try {
-      
+      this.store.dispatch(addToCart({ product, quantity: 1 }));
       this.snackBarService.openSnackBar(
         'Element add Successfully to the cart!',
         'success',

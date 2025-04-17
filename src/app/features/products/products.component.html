@@ -39,7 +39,7 @@
         <th mat-header-cell *matHeaderCellDef> Azioni </th>
         <td mat-cell *matCellDef="let row">
           <mat-icon (click)="goToProductDetail(row.id)">info</mat-icon>
-          <mat-icon (click)="addToCart(row.id)">add-to-cart</mat-icon>
+          <mat-icon (click)="addElementToCart(row.id)">add-to-cart</mat-icon>
         </td>
       </ng-container>
 
