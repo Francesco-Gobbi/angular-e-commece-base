@@ -11,6 +11,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { SnackBarService } from '../../shared/components/snack-bar/service/snack-bar.service';
 
 @Component({
   selector: 'app-product-list',
@@ -30,13 +31,24 @@ export class ProductListComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  displayedColumns: string[] = ['_id', 'name', 'stock', 'status', 'actions'];
+  displayedColumns: string[] = [
+    '_id',
+    'name',
+    'stock',
+    'price',
+    'category',
+    'actions',
+  ];
   dataSource = new MatTableDataSource<Product>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private router: Router, private productService: ProductService) {}
+  constructor(
+    private router: Router,
+    private productService: ProductService,
+    private snackBarService: SnackBarService
+  ) {}
 
   ngOnInit(): void {
     this.productService.getProducts().subscribe({
@@ -65,5 +77,26 @@ export class ProductListComponent implements OnInit {
 
   goToCart(): void {
     this.router.navigate(['/carts']);
+  }
+
+  goToProductDetail(id: string): void {
+    this.router.navigate(['/product-detail', id]);
+  }
+
+  addToCart(id: string): void {
+    try {
+      
+      this.snackBarService.openSnackBar(
+        'Element add Successfully to the cart!',
+        'success',
+        200000
+      );
+    } catch (e) {
+      this.snackBarService.openSnackBar(
+        'Something went wrong',
+        'danger',
+        2000000
+      );
+    }
   }
 }

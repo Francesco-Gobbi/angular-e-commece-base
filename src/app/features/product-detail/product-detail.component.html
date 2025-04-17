@@ -1,0 +1,69 @@
+<mat-card *ngIf="product" class="product-details-card mat-elevation-z4">
+  <button mat-button color="primary" class="back-to-cart-button" (click)="goToProducts()">
+    <mat-icon>arrow_back</mat-icon> Indietro
+  </button>
+  <mat-card-header>
+    <mat-card-title>{{ product.name }}</mat-card-title>
+    <mat-card-subtitle>
+      <mat-chip-listbox>
+        <mat-chip color="accent">{{ product.category.name }}</mat-chip>
+      </mat-chip-listbox>
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <div class="product-image-container">
+    <img mat-card-image [src]="product.imageUrl || '../../assets/images/placeholder.png'" alt="{{ product.name }}"
+      class="product-image" />
+  </div>
+
+  <mat-card-content>
+    <div class="product-price">
+      <span class="price-tag">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</span>
+      <span class="totalPrice">{{ product.price*product.stock | currency:'EUR':'symbol':'1.2-2' }}</span>
+      <!-- <span class="stock-tag"
+        [ngClass]="{'in-stock': product.stock > 10, 'low-stock': product.stock <= 10 && product.stock > 0, 'out-of-stock': product.stock <= 0}">
+        {{ product.stock > 0 ? (product.stock > 10 ? 'In Stock' : 'Low Stock') : 'Out of Stock' }}
+      </span> -->
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="product-details">
+      <h3>Descrizione</h3>
+      <p>{{ product.description }}</p>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="additional-info">
+      <div class="info-row">
+        <span class="info-label">Disponibilità:</span>
+        <span class="info-value">{{ product.stock }} unità</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Categoria:</span>
+        <span class="info-value">{{ product.category.name }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Descrizione categoria:</span>
+        <span class="info-value">{{ product.category.description }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Aggiunto il:</span>
+        <span class="info-value">{{ product.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <!-- <button mat-button color="primary" (click)="goToProducts()">
+      <mat-icon>arrow_back</mat-icon> Indietro
+    </button> -->
+    <button mat-raised-button color="primary" class="modify-to-cart-button">
+      <mat-icon>edit</mat-icon> Modifica
+    </button>
+    <button mat-fab color="accent" class="add-to-cart-button">
+      <mat-icon>add_shopping_cart</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>
