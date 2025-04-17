@@ -16,5 +16,17 @@ export const setAuthFailure = createAction(
 
 export const clearAuth = createAction(
   '[Auth] Clear Auth',
-  props<{a: undefined}>(),
+);
+
+export const updateUser = createAction(
+  '[Auth] Auth',
+  props<{ user: User }>()
+);
+export const updateUserSuccess = createAction(
+  '[Auth] Auth Success',
+  props<{ user: User }>()
+);
+export const updateUserFailure = createAction(
+  '[Auth] Auth Failure',
+  props<{ error: any }>()
 );

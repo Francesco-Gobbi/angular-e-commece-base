@@ -1,0 +1,42 @@
+<div class="profile-container">
+  <mat-card class="profile-card" *ngIf="user">
+    <div class="profile-header">
+      <div class="cover-photo"></div>
+      <div class="avatar-wrapper">
+        <div class="avatar-container">
+          <img src="https://picsum.photos/200" alt="Avatar" class="avatar" />
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-content">
+      <h2 class="profile-name">{{ email.split('@')[0] }}</h2>
+      <p class="profile-role">{{ role }}</p>
+
+      <mat-divider></mat-divider>
+
+      <form (ngSubmit)="save()" class="profile-form">
+        <div class="form-section">
+          <h3>Account Information</h3>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Email</mat-label>
+            <input matInput [(ngModel)]="email" name="email" />
+            <mat-icon matSuffix>email</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="action-buttons">
+          <button mat-stroked-button color="warn" type="button" (click)="logOut()">
+            <mat-icon>exit_to_app</mat-icon>
+            Logout
+          </button>
+          <button mat-raised-button color="primary" type="submit" style="padding: 5px">
+            <mat-icon>save</mat-icon>
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </mat-card>
+</div>
