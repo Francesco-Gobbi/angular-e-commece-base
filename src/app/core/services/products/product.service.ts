@@ -18,7 +18,7 @@ export class ProductService {
       .pipe(map((res) => res || []));
   }
 
-  getProductById(id: string): Observable<Product> {
+  getCartById(id: string): Observable<Product> {
     return this.http
       .get<Product>(`${this.endpoint}/${id}`)
       .pipe(map((res) => res));

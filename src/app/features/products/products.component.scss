@@ -8,15 +8,13 @@
 
 .filter-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin: 10px 0;
 }
 
 .filter-container button {
-  margin-bottom: 1%;
-  width: auto;
-  border: none;
-  background-color: transparent;
+  margin-right: 10px;
 }
 
 .filter-input {
@@ -40,9 +38,33 @@ table {
   border-radius: 8px;
 }
 
+/* Stili per la modale */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-form {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+}
+
+.form-field {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
 @media (max-width: 508px) {
+  .filter-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .filter-input {
     width: 100%;
+    margin-top: 10px;
   }
 
   .table-container {

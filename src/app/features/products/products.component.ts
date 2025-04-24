@@ -1,19 +1,34 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { ProductService } from '../../core/services/products/product.service';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Product } from '../../core/models/product.model';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+
+// Angular Material imports
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import {
+  MatDialog,
+  MatDialogRef,
+  MatDialogModule,
+} from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { SnackBarService } from '../../shared/components/snack-bar/service/snack-bar.service';
-import { Store } from '@ngrx/store';
-import { addToCart } from '../../state/carts/actions';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+
+import { Product } from '../../core/models/product.model';
+import { ProductService } from '../../core/services/products/product.service';
+import { CategoryService } from '../../core/services/categories/category.service';
+import { CartService } from '../../core/services/carts/cart.service';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
@@ -21,61 +36,106 @@ import { addToCart } from '../../state/carts/actions';
   styleUrls: ['./products.component.scss'],
   standalone: true,
   imports: [
-    MatPaginatorModule,
-    MatFormFieldModule,
-    MatIconModule,
     CommonModule,
-    MatInputModule,
+    ReactiveFormsModule,
+    RouterModule,
     MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatSelectModule,
   ],
 })
 export class ProductListComponent implements OnInit {
-  loading = true;
-  error: string | null = null;
-
   displayedColumns: string[] = [
-    '_id',
+    // '_id',
+    'image',
     'name',
     'stock',
     'price',
     'category',
     'actions',
   ];
-  dataSource = new MatTableDataSource<Product>([]);
+  dataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>([]);
+  productForm!: FormGroup; // Add non-null assertion operator
+  categories: any[] = [];
+  dialogRef!: MatDialogRef<any>; // Add non-null assertion operator
+  isLoading = false;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator; // Add non-null assertion operator
+  @ViewChild(MatSort, { static: true }) sort!: MatSort; // Add non-null assertion operator
+  @ViewChild('addProductModal') addProductModal!: TemplateRef<any>; // Add non-null assertion operator
 
   constructor(
-    private store: Store,
-    private router: Router,
     private productService: ProductService,
-    private snackBarService: SnackBarService
-  ) {}
+    private categoryService: CategoryService,
+    private cartService: CartService,
+    private formBuilder: FormBuilder,
+    private dialog: MatDialog,
+    private router: Router
+  ) {
+    this.initializeForm();
+  }
 
-  ngOnInit(): void {
-    this.productService.getProducts().subscribe({
-      next: (products: Product[]) => {
-        this.dataSource.data = products;
-        this.loading = false;
-      },
-      error: (err: Error) => {
-        this.error = 'Errore nel caricamento degli ordini';
-        this.loading = false;
-      },
+  initializeForm(): void {
+    this.productForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      price: [0, [Validators.required, Validators.min(0)]],
+      stock: [0, [Validators.required, Validators.min(0)]],
+      categoryId: ['', Validators.required],
+      description: [''],
+      imageUrl: '',
     });
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  ngOnInit(): void {
+    this.loadProducts();
+    this.loadCategories();
+  }
+
+  loadProducts(): void {
+    this.isLoading = true;
+    this.productService
+      .getProducts()
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading products:', error);
+          return of([]);
+        })
+      )
+      .subscribe((products: Product[]) => {
+        this.dataSource = new MatTableDataSource(products);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.isLoading = false;
+      });
+  }
+
+  loadCategories(): void {
+    this.categoryService
+      .getCategories()
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading categories:', error);
+          return of([]);
+        })
+      )
+      .subscribe((categories) => {
+        this.categories = categories;
+      });
   }
 
   applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value
-      .trim()
-      .toLowerCase();
-    this.dataSource.filter = filterValue;
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   goToCart(): void {
@@ -87,19 +147,63 @@ export class ProductListComponent implements OnInit {
   }
 
   addElementToCart(product: Product): void {
-    try {
-      this.store.dispatch(addToCart({ product, quantity: 1 }));
-      this.snackBarService.openSnackBar(
-        'Element add Successfully to the cart!',
-        'success',
-        200000
-      );
-    } catch (e) {
-      this.snackBarService.openSnackBar(
-        'Something went wrong',
-        'danger',
-        2000000
-      );
+    this.cartService.addToCart(product);
+  }
+
+  openAddProductModal(): void {
+    this.productForm.reset({
+      price: 0,
+      stock: 0,
+    });
+    this.dialogRef = this.dialog.open(this.addProductModal, {
+      width: '500px',
+      disableClose: true,
+    });
+  }
+
+  saveProduct(): void {
+    if (this.productForm.valid) {
+      const productData = this.productForm.value;
+      this.isLoading = true;
+      this.productService
+        .createProduct(productData)
+        .pipe(
+          catchError((error) => {
+            console.error('Error saving product:', error);
+            this.isLoading = false;
+            return of(null);
+          })
+        )
+        .subscribe(
+          (newProduct: Product | null) => {
+            if (newProduct) {
+              this.loadProducts();
+              this.dialogRef.close();
+            }
+            this.isLoading = false;
+          },
+          (error) => {
+            console.error('Error saving product:', error);
+            this.isLoading = false;
+          }
+        );
+    } else {
+      this.markFormGroupTouched(this.productForm);
+    }
+  }
+
+  markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach((control) => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+
+  closeDialog(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close();
     }
   }
 }
