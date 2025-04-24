@@ -27,8 +27,7 @@ export const cartReducer = createReducer(
           : item
       );
     } else {
-      state.products.push({ ...product, quantity });
-      updatedProducts = state.products;
+      updatedProducts = [...state.products, { ...product, quantity }];
     }
 
     return {
