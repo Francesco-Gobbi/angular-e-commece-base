@@ -38,7 +38,7 @@ export type Orders = {
   _id: string;
   orderNumber: string;
   userId: string;
-  user: User;
+  user?: User;
   totalAmount: number;
   status: OrderStatuses;
   createdAt?: Date;

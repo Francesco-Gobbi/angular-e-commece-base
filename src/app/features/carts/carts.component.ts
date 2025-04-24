@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { catchError, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import {
+  clearCart,
   loadCart,
   removeFromCart,
   updateProductQuantity,
@@ -16,7 +17,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CartItem } from '../../shared/types';
+import { CartItem, Orders, OrderStatuses, User } from '../../shared/types';
+import { OrdersService } from '../../core/services/orders/orders.service';
+import { selectUser } from '../../state/auth/selectors';
 
 @Component({
   selector: 'app-cart',
@@ -34,12 +37,27 @@ import { CartItem } from '../../shared/types';
 })
 export class CartComponent implements OnInit {
   items$!: Observable<CartItem[]>;
+  user$!: Observable<User | null>;
 
-  constructor(private store: Store, private router: Router) {}
+  user: User | null = null;
+
+  constructor(
+    private orderService: OrdersService,
+    private store: Store,
+    private router: Router
+  ) {
+    this.user$ = this.store.select(selectUser);
+  }
 
   ngOnInit() {
     this.store.dispatch(loadCart());
     this.items$ = this.store.select(selectCartItems) || [];
+    this.user$.subscribe((user) => {
+      if (user) {
+        console.log(user);
+        this.user = user;
+      }
+    });
   }
 
   goBack() {
@@ -85,7 +103,21 @@ export class CartComponent implements OnInit {
   }
 
   checkout() {
-    console.log('Checkout');
-    // this.router.navigate(['/checkout']);
+    this.orderService
+      .createOrders({
+        orderNumber: '1',
+        totalAmount: this.calculateTotal(),
+        status: OrderStatuses.PENDING,
+        userId: this.user?._id,
+      } as Orders)
+      .subscribe({
+        next: (res) => {
+          this.router.navigate(['/orders']);
+          this.store.dispatch(clearCart());
+        },
+        error: (err) => {
+          console.error("Errore durante la creazione dell'ordine:", err);
+        },
+      });
   }
 }

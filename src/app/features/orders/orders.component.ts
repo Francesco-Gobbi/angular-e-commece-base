@@ -3,15 +3,13 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
-import {
-  OrdersService,
-  Order,
-} from '../../core/services/orders/orders.service';
+import { OrdersService } from '../../core/services/orders/orders.service';
 import { OrderDetailsComponent } from '../order-detail/order-detail.component';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { Orders } from '../../shared/types';
 
 @Component({
   selector: 'OrderTable',
@@ -37,7 +35,7 @@ export class OrdersTableComponent implements OnInit, AfterViewInit {
     'status',
     'actions',
   ];
-  dataSource = new MatTableDataSource<Order>([]);
+  dataSource = new MatTableDataSource<Orders>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -46,7 +44,7 @@ export class OrdersTableComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.orderService.getOrders().subscribe({
-      next: (orders: Order[]) => {
+      next: (orders: Orders[]) => {
         console.log(orders);
         this.dataSource.data = orders;
         this.loading = false;
@@ -70,8 +68,8 @@ export class OrdersTableComponent implements OnInit, AfterViewInit {
     this.dataSource.filter = filterValue;
   }
 
-  openOrderDetails(order: Order): void {
-    this.orderService.getOrderById(order.id).subscribe((orderDetails) => {
+  openOrderDetails(order: Orders): void {
+    this.orderService.getOrderById(order._id).subscribe((orderDetails) => {
       this.dialog.open(OrderDetailsComponent, {
         width: '400px',
         data: orderDetails,

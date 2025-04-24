@@ -2,16 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthApiService } from '../api/auth-api/auth-api.service';
-
-export interface Order {
-  id: string;
-  orderNumber: string;
-  totalAmount: number;
-  userId: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Orders } from '../../../shared/types';
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
@@ -19,25 +10,25 @@ export class OrdersService {
 
   constructor(private http: AuthApiService) {}
 
-  getOrders(): Observable<Order[]> {
+  getOrders(): Observable<Orders[]> {
     return this.http
-      .get<Order[]>(this.endpoint)
+      .get<Orders[]>(this.endpoint)
       .pipe(map((res: any) => res || []));
   }
 
-  getOrderById(id: string): Observable<Order> {
+  getOrderById(id: string): Observable<Orders> {
     return this.http
-      .get<Order>(`${this.endpoint}/${id}`)
+      .get<Orders>(`${this.endpoint}/${id}`)
       .pipe(map((res) => res));
   }
 
-  createOrders(body: Order): Observable<Order> {
-    return this.http.post<Order>(this.endpoint, body).pipe(map((res) => res));
+  createOrders(body: Orders): Observable<Orders> {
+    return this.http.post<Orders>(this.endpoint, body).pipe(map((res) => res));
   }
 
-  updateOrders(id: string, body: Partial<Order>): Observable<Order> {
+  updateOrders(id: string, body: Partial<Orders>): Observable<Orders> {
     return this.http
-      .put<Order>(`${this.endpoint}/${id}`, body)
+      .put<Orders>(`${this.endpoint}/${id}`, body)
       .pipe(map((res) => res));
   }
 
