@@ -16,27 +16,25 @@ import { AuthEffects } from './state/auth/effects';
 import { CartEffects } from './state/carts/effects';
 import { authTokenInterceptor } from './core/services/api/interceptors/auth-token.interceptor';
 import { loaderInterceptor } from './core/services/api/interceptors/loader.interceptor';
+import { cartReducer } from './state/carts/reducers';
 
-
-export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
+export function localStorageSyncReducer(
+  reducer: ActionReducer<any>
+): ActionReducer<any> {
   return localStorageSync({
-    keys: ['auth'],
+    keys: ['auth', 'cart'],
     rehydrate: true,
-    storage: localStorage
+    storage: localStorage,
   })(reducer);
 }
 
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
 
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimationsAsync(),
-    provideStore(
-      { auth: authReducer },
-      { metaReducers }
-    ),
+    provideStore({ auth: authReducer, cart: cartReducer }, { metaReducers }),
     provideEffects([AuthEffects, CartEffects]),
     provideHttpClient(
       withFetch(),

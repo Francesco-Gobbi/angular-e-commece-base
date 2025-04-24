@@ -26,9 +26,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { Product } from '../../core/models/product.model';
 import { ProductService } from '../../core/services/products/product.service';
 import { CategoryService } from '../../core/services/categories/category.service';
-import { CartService } from '../../core/services/carts/cart.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { addToCart } from '../../state/carts/actions';
 
 @Component({
   selector: 'app-product-list',
@@ -73,10 +74,10 @@ export class ProductListComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
-    private cartService: CartService,
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private store: Store
   ) {
     this.initializeForm();
   }
@@ -147,7 +148,7 @@ export class ProductListComponent implements OnInit {
   }
 
   addElementToCart(product: Product): void {
-    this.cartService.addToCart(product);
+    this.store.dispatch(addToCart({ product, quantity: 1 }));
   }
 
   openAddProductModal(): void {
