@@ -19,14 +19,14 @@ export const clearAuth = createAction(
 );
 
 export const updateUser = createAction(
-  '[Auth] Auth',
+  '[User] Update',
   props<{ user: User }>()
 );
 export const updateUserSuccess = createAction(
-  '[Auth] Auth Success',
+  '[User] Update Success',
   props<{ user: User }>()
 );
 export const updateUserFailure = createAction(
-  '[Auth] Auth Failure',
+  '[User] Update Failure',
   props<{ error: any }>()
 );
