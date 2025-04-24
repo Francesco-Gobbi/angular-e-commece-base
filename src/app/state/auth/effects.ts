@@ -51,6 +51,7 @@ export class AuthEffects {
       ofType(setAuthSuccess),
       map(() => {
         this.router.navigate(['/']);
+        console.log('auth success')
         this.snackBarService.openSnackBar('Operation completed successfully!', 'success', 2000);
       })
     ),
@@ -92,6 +93,7 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(updateUserSuccess),
       map(() => {
+        console.log('User updated successfully');
         this.snackBarService.openSnackBar('Profile updated successfully!', 'success', 2000);
       })
     ),
