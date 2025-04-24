@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AuthApiService } from '../api/auth-api/auth-api.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Category } from '../../models/category.model';
+import { Categories } from '../../../shared/types';
 
 @Injectable({
   providedIn: 'root',
@@ -12,27 +12,27 @@ export class CategoryService {
 
   constructor(private http: AuthApiService) {}
 
-  getCategories(): Observable<Category[]> {
+  getCategories(): Observable<Categories[]> {
     return this.http
-      .get<Category[]>(this.endpoint)
+      .get<Categories[]>(this.endpoint)
       .pipe(map((res) => res || []));
   }
 
-  getCategoryById(id: string): Observable<Category> {
+  getCategoryById(id: string): Observable<Categories> {
     return this.http
-      .get<Category>(`${this.endpoint}/${id}`)
+      .get<Categories>(`${this.endpoint}/${id}`)
       .pipe(map((res) => res));
   }
 
-  createCategory(body: Category): Observable<Category> {
+  createCategory(body: Categories): Observable<Categories> {
     return this.http
-      .post<Category>(this.endpoint, body)
+      .post<Categories>(this.endpoint, body)
       .pipe(map((res) => res));
   }
 
-  updateCategory(id: string, body: Partial<Category>): Observable<Category> {
+  updateCategory(id: string, body: Partial<Categories>): Observable<Categories> {
     return this.http
-      .put<Category>(`${this.endpoint}/${id}`, body)
+      .put<Categories>(`${this.endpoint}/${id}`, body)
       .pipe(map((res) => res));
   }
 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AuthApiService } from '../api/auth-api/auth-api.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Product } from '../../models/product.model';
+import { Products } from '../../../shared/types';
 
 @Injectable({
   providedIn: 'root',
@@ -12,25 +12,25 @@ export class ProductService {
 
   constructor(private http: AuthApiService) {}
 
-  getProducts(): Observable<Product[]> {
+  getProducts(): Observable<Products[]> {
     return this.http
-      .get<Product[]>(this.endpoint)
+      .get<Products[]>(this.endpoint)
       .pipe(map((res) => res || []));
   }
 
-  getCartById(id: string): Observable<Product> {
+  getCartById(id: string): Observable<Products> {
     return this.http
-      .get<Product>(`${this.endpoint}/${id}`)
+      .get<Products>(`${this.endpoint}/${id}`)
       .pipe(map((res) => res));
   }
 
-  createProduct(body: Product): Observable<Product> {
-    return this.http.post<Product>(this.endpoint, body).pipe(map((res) => res));
+  createProduct(body: Products): Observable<Products> {
+    return this.http.post<Products>(this.endpoint, body).pipe(map((res) => res));
   }
 
-  updateProduct(id: string, body: Partial<Product>): Observable<Product> {
+  updateProduct(id: string, body: Partial<Products>): Observable<Products> {
     return this.http
-      .put<Product>(`${this.endpoint}/${id}`, body)
+      .put<Products>(`${this.endpoint}/${id}`, body)
       .pipe(map((res) => res));
   }
 

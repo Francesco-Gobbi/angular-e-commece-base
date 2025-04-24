@@ -6,7 +6,7 @@
     <mat-card-title>{{ product.name }}</mat-card-title>
     <mat-card-subtitle>
       <mat-chip-listbox>
-        <mat-chip color="accent">{{ product.category.name }}</mat-chip>
+        <mat-chip color="accent">{{ product.category?.name }}</mat-chip>
       </mat-chip-listbox>
     </mat-card-subtitle>
   </mat-card-header>
@@ -42,11 +42,11 @@
       </div>
       <div class="info-row">
         <span class="info-label">Categoria:</span>
-        <span class="info-value">{{ product.category.name }}</span>
+        <span class="info-value">{{ product.category?.name }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Descrizione categoria:</span>
-        <span class="info-value">{{ product.category.description }}</span>
+        <span class="info-value">{{ product.category?.description }}</span>
       </div>
       <div class="info-row">
         <span class="info-label">Aggiunto il:</span>

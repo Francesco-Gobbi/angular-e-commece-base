@@ -1,19 +1,100 @@
-<h2>Cart List</h2>
+<!-- carts.component.html -->
+<div class="cart-container">
+  <div class="cart-header">
+    <button mat-icon-button color="primary" (click)="goBack()" aria-label="Go back">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h2>Il tuo carrello</h2>
+  </div>
 
-<button mat-icon-button color="primary" (click)="goBack()">
-  <mat-icon>shopping_cart</mat-icon>
-</button>
+  <!-- Utilizzo di "as items" per memorizzare i risultati dell'Observable -->
+  <ng-container *ngIf="(items$ | async) as items">
+    <!-- Caso carrello vuoto -->
+    <div class="empty-cart" *ngIf="items.length === 0">
+      <mat-icon class="empty-cart-icon">shopping_cart</mat-icon>
+      <p>Il tuo carrello è vuoto</p>
+      <button mat-raised-button color="primary" (click)="goBack()">Continua lo shopping</button>
+    </div>
 
-<ul>
-  <li *ngFor="let item of items$ | async" class="product-item">
-    <h3>{{ item.product.name }}</h3>
-    <p>{{ item.product.description }}</p>
-    <strong>Price: {{ item.product.price * item.quantity }}€</strong>
-    <p>
-      Status:
-      <span [style.color]="item.quantity ? 'green' : 'red'">
-        {{ item.quantity ? 'Available' : 'Out of stock' }}
-      </span>
-    </p>
-  </li>
-</ul>
+    <!-- Caso carrello con elementi -->
+    <div class="cart-content" *ngIf="items.length > 0">
+      <mat-card *ngFor="let item of items" class="cart-item">
+        <mat-card-header>
+          <mat-card-title>{{ item.name }}</mat-card-title>
+          <mat-card-subtitle *ngIf="item.category">{{ item.category.name }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="item-details">
+            <div class="item-image" *ngIf="item.imageUrl">
+              <img [src]="item.imageUrl" [alt]="item.name">
+            </div>
+            <div class="item-info">
+              <p class="item-description" *ngIf="item.description">{{ item.description }}</p>
+
+              <div class="item-quantities">
+                <div class="quantity-control">
+                  <p><strong>Quantità:</strong></p>
+                  <div class="quantity-actions">
+                    <button mat-icon-button color="primary" (click)="decreaseQuantity(item)"
+                      [disabled]="item.quantity <= 1">
+                      <mat-icon>remove</mat-icon>
+                    </button>
+                    <span class="quantity-value">{{ item.quantity }}</span>
+                    <button mat-icon-button color="primary" (click)="increaseQuantity(item)"
+                      [disabled]="item.quantity >= item.stock">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <p class="stock-status" [ngClass]="item.stock > 0 ? 'in-stock' : 'out-of-stock'">
+                  <mat-icon>{{ item.stock > 0 ? 'check_circle' : 'error' }}</mat-icon>
+                  {{ item.stock > 0 ? 'Disponibile' : 'Non disponibile' }}
+                  <span *ngIf="item.stock > 0">({{ item.stock }} in magazzino)</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+          <div class="price-details">
+            <p class="unit-price">{{ item.price | currency:'EUR':'symbol':'1.2-2' }} / unità</p>
+            <p class="total-price">Totale: <strong>{{ item.price * item.quantity |
+                currency:'EUR':'symbol':'1.2-2' }}</strong></p>
+          </div>
+          <button mat-icon-button color="warn" (click)="removeFromCart(item)" aria-label="Remove from cart">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <div class="cart-summary">
+        <mat-card>
+          <mat-card-content>
+            <h3>Riepilogo ordine</h3>
+            <div class="summary-row">
+              <span>Totale prodotti:</span>
+              <span>{{ calculateTotalItems() }} articoli</span>
+            </div>
+            <div class="summary-row">
+              <span>Totale:</span>
+              <span class="grand-total">{{ calculateTotal() | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-stroked-button color="primary" (click)="goBack()">Continua shopping</button>
+            <button mat-raised-button color="primary" (click)="checkout()">Procedi all'ordine</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Stato di caricamento (opzionale) -->
+  <div class="loading-container" *ngIf="!(items$ | async)">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Caricamento carrello...</p>
+  </div>
+</div>

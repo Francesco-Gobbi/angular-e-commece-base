@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../core/services/products/product.service';
-import { Product } from '../../core/models/product.model';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDivider } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { Products } from '../../shared/types';
 
 @Component({
   selector: 'app-product-detail',
@@ -24,7 +24,7 @@ import { MatChipsModule } from '@angular/material/chips';
   ],
 })
 export class ProductDetailComponent implements OnInit {
-  product: Product | null = null;
+  product: Products | null = null;
   loading = true;
   error: string | null = null;
 
@@ -38,7 +38,7 @@ export class ProductDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.productService.getCartById(id).subscribe({
-        next: (prod: Product) => {
+        next: (prod: Products) => {
           this.product = prod;
           this.loading = false;
         },

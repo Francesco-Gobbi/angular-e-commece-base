@@ -1,10 +1,14 @@
 import { createAction, props } from '@ngrx/store';
-import { Cart } from '../../core/models/cart.model';
-import { Product } from '../../core/models/product.model';
+import { Products } from '../../shared/types';
 
 export const addToCart = createAction(
   '[Cart] Add Item',
-  props<{ product: Product; quantity: number }>()
+  props<{ product: Products; quantity: number }>()
+);
+
+export const updateProductQuantity = createAction(
+  '[Cart] Update Item Quantity',
+  props<{ productId: string; quantity: number }>()
 );
 
 export const removeFromCart = createAction(

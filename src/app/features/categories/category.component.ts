@@ -20,9 +20,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { CategoryService } from '../../core/services/categories/category.service';
-import { Category } from '../../core/models/category.model';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Categories } from '../../shared/types';
 
 @Component({
   selector: 'app-category-list',
@@ -44,11 +44,11 @@ import { of } from 'rxjs';
 })
 export class CategoryComponent implements OnInit {
   displayedColumns: string[] = ['name', 'description'];
-  dataSource: MatTableDataSource<Category> = new MatTableDataSource<Category>(
+  dataSource: MatTableDataSource<Categories> = new MatTableDataSource<Categories>(
     []
   );
   categoryForm!: FormGroup;
-  categories: Category[] = [];
+  categories: Categories[] = [];
   dialogRef!: MatDialogRef<any>;
   isLoading = false;
 
@@ -86,7 +86,7 @@ export class CategoryComponent implements OnInit {
           return of([]);
         })
       )
-      .subscribe((categories: Category[]) => {
+      .subscribe((categories: Categories[]) => {
         this.categories = categories;
         this.dataSource = new MatTableDataSource(categories);
         this.dataSource.paginator = this.paginator;
@@ -125,7 +125,7 @@ export class CategoryComponent implements OnInit {
             return of(null);
           })
         )
-        .subscribe((newCategory: Category | null) => {
+        .subscribe((newCategory: Categories | null) => {
           if (newCategory) {
             this.loadCategories();
             this.dialogRef.close();

@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { Cart, Item } from '../../core/models/cart.model';
+import { Cart, CartItem } from '../../shared/types';
 
 export const selectCartState = createFeatureSelector<Cart>('cart');
 
@@ -15,11 +15,11 @@ export const selectCartItems = createSelector(
 
 export const selectCartTotalQuantity = createSelector(
   selectCartItems,
-  (items: Item[]) => items.reduce((acc, item) => acc + item.quantity, 0)
+  (items: CartItem[]) => items.reduce((acc, item) => acc + item.quantity, 0)
 );
 
 export const selectCartTotalPrice = createSelector(
   selectCartItems,
-  (items: Item[]) =>
-    items.reduce((acc, item) => acc + item.product.price * item.quantity, 0)
+  (items: CartItem[]) =>
+    items.reduce((acc, item) => acc + item.price * item.quantity, 0)
 );

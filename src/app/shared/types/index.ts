@@ -9,9 +9,9 @@ export type User = {
   isDeleted: boolean;
   lastLogin: Date;
   preLastLogin: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 export type Products = {
   _id: string;
@@ -19,29 +19,31 @@ export type Products = {
   description: string;
   price: number;
   categoryId: string;
+  category?: Categories;
   stock: number;
   imageUrl: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 export type Categories = {
   _id: string;
   name: string;
   description: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 export type Orders = {
   _id: string;
   orderNumber: string;
   userId: string;
+  user: User;
   totalAmount: number;
   status: OrderStatuses;
-  createdAt: Date;
-  updatedAt: Date;
-}
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 export enum OrderStatuses {
   PENDING = 'pending',
@@ -52,7 +54,17 @@ export enum OrderStatuses {
 export type OrderItems = {
   _id: string;
   orderId: string;
+  order?: Orders;
   productId: string;
+  product: Products;
   quantity: number;
   price: number;
-}
+};
+
+export type Cart = {
+  products: CartItem[];
+};
+
+export type CartItem = Products & {
+  quantity: number;
+};

@@ -23,13 +23,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 
-import { Product } from '../../core/models/product.model';
 import { ProductService } from '../../core/services/products/product.service';
 import { CategoryService } from '../../core/services/categories/category.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { addToCart } from '../../state/carts/actions';
+import { Products } from '../../shared/types';
 
 @Component({
   selector: 'app-product-list',
@@ -61,7 +61,7 @@ export class ProductListComponent implements OnInit {
     'category',
     'actions',
   ];
-  dataSource: MatTableDataSource<Product> = new MatTableDataSource<Product>([]);
+  dataSource: MatTableDataSource<Products> = new MatTableDataSource<Products>([]);
   productForm!: FormGroup; // Add non-null assertion operator
   categories: any[] = [];
   dialogRef!: MatDialogRef<any>; // Add non-null assertion operator
@@ -108,7 +108,7 @@ export class ProductListComponent implements OnInit {
           return of([]);
         })
       )
-      .subscribe((products: Product[]) => {
+      .subscribe((products: Products[]) => {
         this.dataSource = new MatTableDataSource(products);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -147,7 +147,7 @@ export class ProductListComponent implements OnInit {
     this.router.navigate(['/product-detail', id]);
   }
 
-  addElementToCart(product: Product): void {
+  addElementToCart(product: Products): void {
     this.store.dispatch(addToCart({ product, quantity: 1 }));
   }
 
@@ -176,7 +176,7 @@ export class ProductListComponent implements OnInit {
           })
         )
         .subscribe(
-          (newProduct: Product | null) => {
+          (newProduct: Products | null) => {
             if (newProduct) {
               this.loadProducts();
               this.dialogRef.close();

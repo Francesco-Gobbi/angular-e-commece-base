@@ -1,37 +1,91 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { map, Observable, switchMap, filter } from 'rxjs';
-import { ProductService } from '../../core/services/products/product.service';
-import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { Item } from '../../core/models/cart.model';
 import { Store } from '@ngrx/store';
-import { loadCart } from '../../state/carts/actions';
+import {
+  loadCart,
+  removeFromCart,
+  updateProductQuantity,
+} from '../../state/carts/actions';
 import { selectCartItems } from '../../state/carts/selectors';
 
+// Material imports
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CartItem } from '../../shared/types';
+
 @Component({
-  selector: 'app-product-list',
+  selector: 'app-cart',
   templateUrl: './carts.component.html',
+  styleUrls: ['./carts.component.scss'],
   standalone: true,
-  imports: [MatIconModule, CommonModule],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatBadgeModule,
+    MatProgressSpinnerModule,
+  ],
 })
 export class CartComponent implements OnInit {
-  items$!: Observable<Item[]>;
+  items$!: Observable<CartItem[]>;
 
-  constructor(
-    private store: Store,
-    private router: Router,
-    private route: ActivatedRoute,
-    private cartService: ProductService
-  ) {}
+  constructor(private store: Store, private router: Router) {}
 
   ngOnInit() {
     this.store.dispatch(loadCart());
-    this.items$ = this.store.select(selectCartItems);
-    console.log(this, this.items$);
+    this.items$ = this.store.select(selectCartItems) || [];
   }
 
   goBack() {
     this.router.navigate(['/products']);
+  }
+
+  increaseQuantity(item: CartItem) {
+    this.store.dispatch(
+      updateProductQuantity({
+        productId: item._id,
+        quantity: item.quantity + 1,
+      })
+    );
+  }
+
+  decreaseQuantity(item: CartItem) {
+    this.store.dispatch(
+      updateProductQuantity({
+        productId: item._id,
+        quantity: item.quantity - 1,
+      })
+    );
+  }
+
+  removeFromCart(item: CartItem) {
+    this.store.dispatch(removeFromCart({ productId: item._id }));
+  }
+
+  calculateTotal(): number {
+    let total = 0;
+    this.store.select(selectCartItems).subscribe((items) => {
+      total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    });
+    return total;
+  }
+
+  calculateTotalItems(): number {
+    let count = 0;
+    this.store.select(selectCartItems).subscribe((items) => {
+      count = items.reduce((sum, item) => sum + item.quantity, 0);
+    });
+    return count;
+  }
+
+  checkout() {
+    console.log('Checkout');
+    // this.router.navigate(['/checkout']);
   }
 }
