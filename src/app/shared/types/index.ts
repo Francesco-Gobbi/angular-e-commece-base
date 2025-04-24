@@ -34,7 +34,7 @@ export type Categories = {
   updatedAt?: Date;
 };
 
-export type Orders = {
+export type Order = {
   _id: string;
   orderNumber: string;
   userId: string;
@@ -54,7 +54,7 @@ export enum OrderStatuses {
 export type OrderItems = {
   _id: string;
   orderId: string;
-  order?: Orders;
+  order?: Order;
   productId: string;
   product: Products;
   quantity: number;

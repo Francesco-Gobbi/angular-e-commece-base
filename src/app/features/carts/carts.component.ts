@@ -17,7 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CartItem, Orders, OrderStatuses, User } from '../../shared/types';
+import { CartItem, Order, OrderStatuses, User } from '../../shared/types';
 import { OrdersService } from '../../core/services/orders/orders.service';
 import { selectUser } from '../../state/auth/selectors';
 
@@ -109,7 +109,7 @@ export class CartComponent implements OnInit {
         totalAmount: this.calculateTotal(),
         status: OrderStatuses.PENDING,
         userId: this.user?._id,
-      } as Orders)
+      } as Order)
       .subscribe({
         next: (res) => {
           this.router.navigate(['/orders']);
