@@ -1,45 +1,113 @@
 .orders-container {
-    height: calc(100vh - 30%);
-    padding: 0 10px;
-    display: flex;
+  height: calc(100vh - 30%);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.actions-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.filter-input {
+  width: 250px;
+  margin-bottom: 0;
+}
+
+.table-container {
+  flex: 1;
+  margin-bottom: 5%;
+  border-radius: 8px;
+  background-color: #ffffff;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 16px;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 16px;
+}
+
+.error-message {
+  color: #f44336;
+  font-weight: 500;
+}
+
+.status-pending {
+  color: #ff9800;
+  font-weight: 500;
+}
+
+.status-completed {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.status-cancelled {
+  color: #f44336;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .header-container {
     flex-direction: column;
-    box-sizing: border-box;
+    align-items: flex-start;
+    gap: 16px;
   }
-  
-  .filter-container {
-    display: flex;
-    justify-content: flex-end;
-    margin: 10px 0;
+
+  .actions-container {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
   }
-  
+
   .filter-input {
-    width: 250px;
+    width: 100%;
   }
-  
+}
+
+@media (max-width: 508px) {
+  .header-container {
+    margin-bottom: 24px;
+  }
+
+  .filter-input {
+    width: 100%;
+  }
 
   .table-container {
-    flex: 1;
-    margin-bottom: 5%; 
-    border-radius: 5px; 
-    background-color: #ffffff; 
-    display: flex;
-    overflow: hidden;
-    flex-direction: column;
-    padding: 16px;
+    max-height: calc(100vh - 200px);
   }
-  
-  table {
-    flex: 1;
-    overflow: hidden;
-    border-radius: 8px;
-  }
-  
-  @media (max-width: 508px) {
-    .filter-input {
-      width: 100%;
-    }
-  
-    .table-container {
-      max-height: calc(100vh - 150px);
-    }
-  }
+}
