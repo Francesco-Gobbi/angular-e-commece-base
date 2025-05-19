@@ -1,3 +1,4 @@
+import { Products } from './../../shared/types/index';
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -29,7 +30,7 @@ import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { addToCart } from '../../state/carts/actions';
-import { Products } from '../../shared/types';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-product-list',
@@ -49,6 +50,7 @@ import { Products } from '../../shared/types';
     MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatSnackBarModule
   ],
 })
 export class ProductListComponent implements OnInit {
@@ -66,6 +68,7 @@ export class ProductListComponent implements OnInit {
   categories: any[] = [];
   dialogRef!: MatDialogRef<any>; // Add non-null assertion operator
   isLoading = false;
+  addedToCart = false;
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator; // Add non-null assertion operator
   @ViewChild(MatSort, { static: true }) sort!: MatSort; // Add non-null assertion operator
@@ -149,6 +152,11 @@ export class ProductListComponent implements OnInit {
 
   addElementToCart(product: Products): void {
     this.store.dispatch(addToCart({ product, quantity: 1 }));
+    this.addedToCart = true;
+
+    setTimeout(() => {
+      this.addedToCart = false;
+    }, 1000);
   }
 
   openAddProductModal(): void {
@@ -200,6 +208,11 @@ export class ProductListComponent implements OnInit {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  onImageError(event: Event) {
+    const target = event.target as HTMLImageElement;
+    target.src = 'assets/img/placeholder.png';
   }
 
   closeDialog(): void {
