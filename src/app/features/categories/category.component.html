@@ -5,7 +5,9 @@
     </button>
 
     <mat-form-field appearance="outline">
-      <input matInput (keyup)="applyFilter($event)" placeholder="Filtra categorie..." />
+      <input matInput (blur)="applyFilter($event)" (keydown.enter)="applyFilter($event)"
+        matTooltip="usa #nome o #descrizione ALL'INIZIO per filtrare un solo campo"
+        placeholder="Filtra categorie... 'hover for more information'" />
     </mat-form-field>
   </div>
 
