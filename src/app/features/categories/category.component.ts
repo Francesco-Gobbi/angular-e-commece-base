@@ -98,7 +98,9 @@ export class CategoryComponent implements OnInit {
   }
 
   applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
+    const filterValue = (event.target as HTMLInputElement).value
+      .trim()
+      .toLowerCase();
 
     if (filterValue.startsWith('#nome')) {
       const nameFilter = filterValue.substring(6).trim().toLowerCase();

@@ -10,6 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Order } from '../../shared/types';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'OrderTable',
@@ -22,6 +23,7 @@ import { Order } from '../../shared/types';
     CommonModule,
     MatInputModule,
     MatTableModule,
+    MatTooltipModule
   ],
 })
 export class OrdersTableComponent implements OnInit, AfterViewInit {
@@ -40,7 +42,7 @@ export class OrdersTableComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private orderService: OrdersService, private dialog: MatDialog) {}
+  constructor(private orderService: OrdersService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.orderService.getOrders().subscribe({
@@ -62,11 +64,39 @@ export class OrdersTableComponent implements OnInit, AfterViewInit {
   }
 
   applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value
-      .trim()
-      .toLowerCase();
-    this.dataSource.filter = filterValue;
+    const input = (event.target as HTMLInputElement).value.trim().toLowerCase();
+
+    if (input.startsWith('#numero ordine')) {
+      const filter = input.substring(15).trim();
+      this.dataSource.filterPredicate = (data: Order, filter: string) =>
+        data.orderNumber.toLowerCase().includes(filter);
+      this.dataSource.filter = filter;
+    } else if (input.startsWith('#importo')) {
+      const filter = input.substring(9).trim();
+      this.dataSource.filterPredicate = (data: Order, filter: string) =>
+        data.totalAmount.toString().includes(filter);
+      this.dataSource.filter = filter;
+    } else if (input.startsWith('#stato')) {
+      const filter = input.substring(7).trim();
+      this.dataSource.filterPredicate = (data: Order, filter: string) =>
+        data.status.toLowerCase().includes(filter);
+      this.dataSource.filter = filter;
+    } else {
+
+      this.dataSource.filterPredicate = (data: Order, filter: string) => {
+        const matchOrder = data.orderNumber.toLowerCase().includes(filter);
+        const matchAmount = data.totalAmount.toString().includes(filter);
+        const matchStatus = data.status.toLowerCase().includes(filter);
+        return matchOrder || matchAmount || matchStatus;
+      };
+      this.dataSource.filter = input;
+    }
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
+
 
   openOrderDetails(order: Order): void {
     this.orderService.getOrderById(order._id).subscribe((orderDetails) => {

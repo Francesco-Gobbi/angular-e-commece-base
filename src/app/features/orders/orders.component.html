@@ -1,7 +1,9 @@
 <div class="orders-container">
   <div class="filter-container">
-    <mat-form-field class="filter-input" appearance="outline">
-      <input matInput (keyup)="applyFilter($event)" placeholder="Filtra ordini..." #input>
+    <mat-form-field appearance="outline">
+      <input matInput (blur)="applyFilter($event)" (keydown.enter)="applyFilter($event)"
+        matTooltip="usa #numero ordine #importo #stato ALL'INIZIO per filtrare un solo campo"
+        placeholder="Filtra ordini... 'hover for more information'" />
     </mat-form-field>
   </div>
 
@@ -36,16 +38,14 @@
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row  *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" colspan="5">Nessun dato corrisponde al filtro</td>
       </tr>
     </table>
 
-    <mat-paginator
-      [pageSizeOptions]="[5, 10, 25]"
-      aria-label="Select page of orders">
+    <mat-paginator [pageSizeOptions]="[5, 10, 25]" aria-label="Select page of orders">
     </mat-paginator>
   </div>
 </div>
