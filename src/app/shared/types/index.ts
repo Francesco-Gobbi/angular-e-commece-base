@@ -41,6 +41,7 @@ export type Order = {
   user?: User;
   totalAmount: number;
   status: OrderStatuses;
+  items: OrderItems[];
   createdAt?: Date;
   updatedAt?: Date;
 };

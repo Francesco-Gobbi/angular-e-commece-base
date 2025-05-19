@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { OrdersService } from '../../core/services/orders/orders.service';
 import { OrderDetailsComponent } from '../order-detail/order-detail.component';
@@ -31,7 +31,8 @@ import { switchMap } from 'rxjs/operators';
     MatTooltipModule,
     MatIconModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatSortModule
   ],
 })
 export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -78,7 +79,6 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loading = true;
     this.orderService.getOrders().subscribe({
       next: (orders: Order[]) => {
-        console.log(orders);
         this.dataSource.data = orders;
         this.loading = false;
       },
@@ -91,6 +91,8 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   refreshOrders(): void {
+    this.loading = true;
+    this.error = null;
     this.loadOrders();
   }
 
@@ -105,7 +107,7 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
     if (input.startsWith('#numero ordine')) {
       const filter = input.substring(15).trim();
       this.dataSource.filterPredicate = (data: Order, filter: string) =>
-        data.orderNumber.toLowerCase().includes(filter);
+        data.orderNumber.toString().toLowerCase().includes(filter);
       this.dataSource.filter = filter;
     } else if (input.startsWith('#importo')) {
       const filter = input.substring(9).trim();
@@ -118,11 +120,11 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
         data.status.toLowerCase().includes(filter);
       this.dataSource.filter = filter;
     } else {
-
       this.dataSource.filterPredicate = (data: Order, filter: string) => {
-        const matchOrder = data.orderNumber.toLowerCase().includes(filter);
+        const matchOrder = data.orderNumber.toString().toLowerCase().includes(filter);
         const matchAmount = data.totalAmount.toString().includes(filter);
         const matchStatus = data.status.toLowerCase().includes(filter);
+
         return matchOrder || matchAmount || matchStatus;
       };
       this.dataSource.filter = input;
@@ -134,14 +136,18 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openOrderDetails(order: Order): void {
+    this.loading = true;
     this.orderService.getOrderById(order._id).subscribe({
       next: (orderDetails) => {
+        this.loading = false;
         this.dialog.open(OrderDetailsComponent, {
-          width: '400px',
+          width: '550px',
           data: orderDetails,
+          panelClass: 'order-details-dialog'
         });
       },
       error: (err) => {
+        this.loading = false;
         console.error('Errore nel caricamento dei dettagli dell\'ordine', err);
         this.error = 'Errore nel caricamento dei dettagli dell\'ordine';
       }

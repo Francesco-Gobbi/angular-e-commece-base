@@ -1,15 +1,16 @@
-
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { AuthApiService } from '../api/auth-api/auth-api.service';
-import { Order } from '../../../shared/types';
+import { Order, OrderItems } from '../../../shared/types';
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
   private endpoint = '/orders';
   private ordersSubject = new BehaviorSubject<Order[]>([]);
   public orders$ = this.ordersSubject.asObservable();
+  private orderCountSubject = new BehaviorSubject<number>(0);
+  public orderCount$ = this.orderCountSubject.asObservable();
 
   constructor(private http: AuthApiService) {
     this.loadOrders();
@@ -21,6 +22,10 @@ export class OrdersService {
       .pipe(map((res: any) => res || []))
       .subscribe(orders => {
         this.ordersSubject.next(orders);
+        if (orders.length > 0) {
+          const maxOrderNumber = Math.max(...orders.map((order: Order) => Number(order.orderNumber)));
+          this.orderCountSubject.next(maxOrderNumber);
+        }
       });
   }
 
@@ -31,6 +36,10 @@ export class OrdersService {
         map((res: any) => res || []),
         tap(orders => {
           this.ordersSubject.next(orders);
+          if (orders.length > 0) {
+            const maxOrderNumber = Math.max(...orders.map(order => Number(order.orderNumber)));
+            this.orderCountSubject.next(maxOrderNumber);
+          }
         })
       );
   }
@@ -41,10 +50,17 @@ export class OrdersService {
       .pipe(map((res) => res));
   }
 
-  createOrders(body: Order): Observable<Order> {
-    return this.http.post<Order>(this.endpoint, body).pipe(
+  createOrders(body: Omit<Order, '_id' | 'createdAt' | 'updatedAt'>): Observable<Order> {
+    const currentOrderNumber = this.orderCountSubject.getValue();
+    const newOrder = {
+      ...body,
+      orderNumber: currentOrderNumber + 1
+    };
+
+    return this.http.post<Order>(this.endpoint, newOrder).pipe(
       map((res) => res),
-      tap(() => {
+      tap((createdOrder) => {
+        this.orderCountSubject.next(Number(createdOrder.orderNumber));
         this.loadOrders();
       })
     );
