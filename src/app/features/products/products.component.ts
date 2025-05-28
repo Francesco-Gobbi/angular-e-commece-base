@@ -9,7 +9,6 @@ import {
 } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 
-// Angular Material imports
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -23,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { ImgurService } from '../../core/services/imgur/imgur.service';
 
 import { ProductService } from '../../core/services/products/product.service';
 import { CategoryService } from '../../core/services/categories/category.service';
@@ -31,6 +31,7 @@ import { of } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { addToCart } from '../../state/carts/actions';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NgxMatFileInputModule } from '@angular-material-components/file-input';
 
 @Component({
   selector: 'app-product-list',
@@ -50,12 +51,12 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    NgxMatFileInputModule
   ],
 })
 export class ProductListComponent implements OnInit {
   displayedColumns: string[] = [
-    // '_id',
     'image',
     'name',
     'stock',
@@ -64,23 +65,25 @@ export class ProductListComponent implements OnInit {
     'actions',
   ];
   dataSource: MatTableDataSource<Products> = new MatTableDataSource<Products>([]);
-  productForm!: FormGroup; // Add non-null assertion operator
+  productForm!: FormGroup; 
   categories: any[] = [];
-  dialogRef!: MatDialogRef<any>; // Add non-null assertion operator
+  dialogRef!: MatDialogRef<any>; 
   isLoading = false;
   addedToCart = false;
+  selectedFile: File | null = null;
+  previewUrl: string | null = null;
 
-  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator; // Add non-null assertion operator
-  @ViewChild(MatSort, { static: true }) sort!: MatSort; // Add non-null assertion operator
-  @ViewChild('addProductModal') addProductModal!: TemplateRef<any>; // Add non-null assertion operator
-
+  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort; 
+  @ViewChild('addProductModal') addProductModal!: TemplateRef<any>; 
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
     private router: Router,
-    private store: Store
+    private store: Store,
+    private imgurService: ImgurService
   ) {
     this.initializeForm();
   }
@@ -93,6 +96,7 @@ export class ProductListComponent implements OnInit {
       categoryId: ['', Validators.required],
       description: [''],
       imageUrl: '',
+      imageFile: [null]
     });
   }
 
@@ -198,41 +202,53 @@ export class ProductListComponent implements OnInit {
 
   saveProduct(): void {
     if (this.productForm.valid) {
-      const productData = this.productForm.value;
-      this.isLoading = true;
-      this.productService
-        .createProduct(productData)
-        .pipe(
-          catchError((error) => {
-            console.error('Error saving product:', error);
-            this.isLoading = false;
-            return of(null);
-          })
-        )
-        .subscribe(
-          (newProduct: Products | null) => {
-            if (newProduct) {
-              this.loadProducts();
-              this.dialogRef.close();
+        const productData = this.productForm.value;
+        this.isLoading = true;
+
+        if (!productData.imageFile && !productData.imageUrl) {
+          productData.imageUrl = '../../assets/img/placeholder.png';
+        }
+
+        this.productService.createProduct(productData)
+          .pipe(
+            catchError((error) => {
+              console.error('Error saving product:', error);
+              this.isLoading = false;
+              return of(null);
+            })
+          )
+          .subscribe(
+            (newProduct: Products | null) => {
+              if (newProduct) {
+                this.loadProducts();
+                this.dialogRef.close();
+              }
+              this.isLoading = false;
             }
-            this.isLoading = false;
-          },
-          (error) => {
-            console.error('Error saving product:', error);
-            this.isLoading = false;
-          }
-        );
+          );
     } else {
       this.markFormGroupTouched(this.productForm);
     }
   }
 
+  onFileSelected(event: any): void {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.previewUrl = e.target.result;
+        this.productForm.patchValue({
+          imageFile: file,
+          imageUrl: null
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   markFormGroupTouched(formGroup: FormGroup): void {
-    Object.values(formGroup.controls).forEach((control) => {
+      Object.values(formGroup.controls).forEach(control => {
       control.markAsTouched();
-      if (control instanceof FormGroup) {
-        this.markFormGroupTouched(control);
-      }
     });
   }
 

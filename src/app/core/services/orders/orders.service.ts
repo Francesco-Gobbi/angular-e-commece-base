@@ -55,7 +55,6 @@ export class OrdersService {
     const newOrder = {
       ...body,
       orderNumber: currentOrderNumber + 1,
-      totalAmount: body.items ? body.items.reduce((sum, item) => sum + (item.price * item.quantity), 0) : 0
     };
 
     return this.http.post<Order>(this.endpoint, newOrder).pipe(
