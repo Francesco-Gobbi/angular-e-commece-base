@@ -12,7 +12,9 @@
     </button>
 
     <mat-form-field class="filter-input" appearance="outline">
-      <input matInput (keyup)="applyFilter($event)" placeholder="Filtra ordini..." #input>
+      <input matInput (blur)="applyFilter($event)" (keydown.enter)="applyFilter($event)"
+            placeholder="Filtra prodotti..." #input
+            matTooltip="usa #nome #categoria #prezzo per filtrare un solo campo">
     </mat-form-field>
   </div>
 

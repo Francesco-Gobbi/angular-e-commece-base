@@ -133,14 +133,40 @@ export class ProductListComponent implements OnInit {
       });
   }
 
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    applyFilter(event: Event): void {
+      const inputValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+      if (inputValue.startsWith('#nome')) {
+        const filter = inputValue.substring(5).trim();
+        this.dataSource.filterPredicate = (data: Products, filter: string) => data.name?.toLowerCase().includes(filter) ?? false;
+        this.dataSource.filter = filter;
+
+      } else if (inputValue.startsWith('#categoria')) {
+        const filter = inputValue.substring(10).trim();
+        this.dataSource.filterPredicate = (data: Products, filter: string) => data.category?.name?.toLowerCase().includes(filter) ?? false;
+        this.dataSource.filter = filter;
+
+      } else if (inputValue.startsWith('#prezzo')) {
+        const filter = inputValue.substring(8).trim();
+        this.dataSource.filterPredicate = (data: Products, filter: string) => data.price.toString().includes(filter);
+        this.dataSource.filter = filter;
+
+      } else {
+        this.dataSource.filterPredicate = (data: Products, filter: string) => {
+          const nameMatch = data.name?.toLowerCase().includes(filter) ?? false;
+          const descMatch = data.description?.toLowerCase().includes(filter) ?? false;
+          const catMatch = data.category?.name?.toLowerCase().includes(filter) ?? false;
+          return nameMatch || descMatch || catMatch;
+        };
+        this.dataSource.filter = inputValue;
+      }
+
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
     }
-  }
+
+
 
   goToCart(): void {
     this.router.navigate(['/carts']);

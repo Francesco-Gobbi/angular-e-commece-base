@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy, TemplateRef } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { OrdersService } from '../../core/services/orders/orders.service';
 import { OrderDetailsComponent } from '../order-detail/order-detail.component';
 import { CommonModule } from '@angular/common';
@@ -13,9 +13,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Order } from '../../shared/types';
+import { MatSelectModule } from '@angular/material/select';
+import { Order, OrderItems, User } from '../../shared/types';
 import { Subscription, interval } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { authGuard } from '../../core/guards/auth.guard';
+import { CanActivateFn } from '@angular/router';
+import { AuthState } from '../../state/auth/reducers';
 
 @Component({
   selector: 'OrderTable',
@@ -32,13 +37,20 @@ import { switchMap } from 'rxjs/operators';
     MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatSortModule
+    MatSortModule,
+    MatDialogModule,
+    MatSelectModule,
+    ReactiveFormsModule
   ],
 })
 export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = true;
   error: string | null = null;
   private refreshSubscription: Subscription | null = null;
+  isAdmin = false;
+  selectedOrder: Order | null = null;
+  editOrderForm: FormGroup;
+  orderItems: OrderItems[] = [];
 
   displayedColumns: string[] = [
     'id',
@@ -51,10 +63,22 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('editOrderDialog') editOrderDialog!: TemplateRef<any>;
+  @ViewChild('confirmDeleteDialog') confirmDeleteDialog!: TemplateRef<any>;
 
-  constructor(private orderService: OrdersService, private dialog: MatDialog) { }
+  constructor(
+    private orderService: OrdersService,
+    private dialog: MatDialog,
+    private fb: FormBuilder,
+    // private authService: AuthState
+  ) {
+    this.editOrderForm = this.fb.group({
+      status: ['', Validators.required]
+    });
+  }
 
   ngOnInit(): void {
+    // this.checkAdminRole();
     this.loadOrders();
 
     this.refreshSubscription = interval(30000)
@@ -68,6 +92,12 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
   }
+
+  // checkAdminRole(): void {
+  //   this.authService.getCurrentUser().subscribe((user: User | null) => {
+  //     this.isAdmin = user?.role === 'admin';
+  //   });
+  // }
 
   ngOnDestroy(): void {
     if (this.refreshSubscription) {
@@ -150,6 +180,98 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loading = false;
         console.error('Errore nel caricamento dei dettagli dell\'ordine', err);
         this.error = 'Errore nel caricamento dei dettagli dell\'ordine';
+      }
+    });
+  }
+
+  openEditOrder(order: Order): void {
+    this.selectedOrder = order;
+    this.loading = true;
+    this.orderService.getOrderById(order._id).subscribe({
+      next: (orderDetails) => {
+        this.loading = false;
+        this.editOrderForm.patchValue({
+          status: orderDetails.status
+        });
+
+        this.orderItems = orderDetails.items ? [...orderDetails.items] : [];
+
+        this.dialog.open(this.editOrderDialog, {
+          width: '600px',
+          disableClose: true
+        });
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Errore nel caricamento dei dettagli dell\'ordine', err);
+        this.error = 'Errore nel caricamento dei dettagli dell\'ordine';
+      }
+    });
+  }
+
+  deleteOrder(order: Order): void {
+    this.selectedOrder = order;
+    this.dialog.open(this.confirmDeleteDialog, {
+      width: '400px'
+    });
+  }
+
+  confirmDelete(): void {
+    if (!this.selectedOrder) return;
+
+    this.loading = true;
+    this.orderService.deleteOrders(this.selectedOrder._id).subscribe({
+      next: () => {
+        this.dialog.closeAll();
+        this.refreshOrders();
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Errore durante l\'eliminazione dell\'ordine', err);
+        this.error = 'Errore durante l\'eliminazione dell\'ordine';
+      }
+    });
+  }
+
+  increaseQuantity(index: number): void {
+    this.orderItems[index].quantity += 1;
+  }
+
+  decreaseQuantity(index: number): void {
+    if (this.orderItems[index].quantity > 1) {
+      this.orderItems[index].quantity -= 1;
+    }
+  }
+
+  removeItem(index: number): void {
+    this.orderItems.splice(index, 1);
+  }
+
+  calculateTotalAmount(): number {
+    return this.orderItems.reduce((total, item) => {
+      return total + (item.price * item.quantity);
+    }, 0);
+  }
+
+  saveOrderChanges(): void {
+    if (!this.selectedOrder || !this.editOrderForm.valid) return;
+
+    const updatedOrder: Partial<Order> = {
+      ...this.editOrderForm.value,
+      items: this.orderItems,
+      totalAmount: this.calculateTotalAmount()
+    };
+
+    this.loading = true;
+    this.orderService.updateOrders(this.selectedOrder._id, updatedOrder).subscribe({
+      next: () => {
+        this.dialog.closeAll();
+        this.refreshOrders();
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Errore durante l\'aggiornamento dell\'ordine', err);
+        this.error = 'Errore durante l\'aggiornamento dell\'ordine';
       }
     });
   }

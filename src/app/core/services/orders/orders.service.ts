@@ -54,7 +54,8 @@ export class OrdersService {
     const currentOrderNumber = this.orderCountSubject.getValue();
     const newOrder = {
       ...body,
-      orderNumber: currentOrderNumber + 1
+      orderNumber: currentOrderNumber + 1,
+      totalAmount: body.items ? body.items.reduce((sum, item) => sum + (item.price * item.quantity), 0) : 0
     };
 
     return this.http.post<Order>(this.endpoint, newOrder).pipe(
@@ -67,6 +68,10 @@ export class OrdersService {
   }
 
   updateOrders(id: string, body: Partial<Order>): Observable<Order> {
+    if (body.items) {
+      body.totalAmount = body.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
+
     return this.http
       .put<Order>(`${this.endpoint}/${id}`, body)
       .pipe(

@@ -54,6 +54,7 @@ export enum OrderStatuses {
 
 export type OrderItems = {
   _id: string;
+  name: string;
   orderId: string;
   order?: Order;
   productId: string;
