@@ -23,9 +23,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { ImgbbService } from '../../core/services/imgur/imgur.service';
+import { ImgbbService } from '../../core/services/img/img.service';
 
-import { NgxMatFileInputModule } from '@angular-material-components/file-input';
 import { ProductService } from '../../core/services/products/product.service';
 import { CategoryService } from '../../core/services/categories/category.service';
 import { catchError } from 'rxjs/operators';
@@ -54,7 +53,6 @@ import { AclService } from '../../core/services/acl/acl.service';
     MatFormFieldModule,
     MatSelectModule,
     MatSnackBarModule,
-    NgxMatFileInputModule
   ],
 })
 export class ProductListComponent implements OnInit {
@@ -73,9 +71,11 @@ export class ProductListComponent implements OnInit {
   dialogRef!: MatDialogRef<any>;
   isLoading = false;
   addedToCart = false;
-  selectedFile: File | null = null;
+  fileName: string | null = null;
   previewUrl: string | null = null;
-  
+  selectedFile: File | null = null;
+  imageUrl: string = '';
+    
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('addProductModal') addProductModal!: TemplateRef<any>;
@@ -222,6 +222,13 @@ addElementToCart(product: any): void {
       if (!productData.imageFile && !productData.imageUrl) {
           productData.imageUrl = '../../assets/img/placeholder.png';
       }
+
+      if (this.selectedFile) {
+        this.imgbbService.uploadImage(this.selectedFile)
+        .then(url=> this.imageUrl = url)
+        .catch(err =>  this.snackBar.openSnackBar(err,'warning'));
+      }
+
       this.productService
         .createProduct(productData)
         .pipe(
@@ -248,20 +255,20 @@ addElementToCart(product: any): void {
       this.markFormGroupTouched(this.productForm);
     }
   }
-    onFileSelected(event: any): void {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.previewUrl = e.target.result;
-        this.productForm.patchValue({
-          imageFile: file,
-          imageUrl: null
-        });
-      };
-      reader.readAsDataURL(file);
+
+    onFileSelected(event: Event): void {
+      const input = event.target as HTMLInputElement;
+      if (input.files && input.files[0]) {
+        this.selectedFile = input.files[0];
+        this.fileName = this.selectedFile.name;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.previewUrl = reader.result as string;
+        };
+        reader.readAsDataURL(this.selectedFile);
+      }
     }
-  }
 
   markFormGroupTouched(formGroup: FormGroup): void {
     Object.values(formGroup.controls).forEach((control) => {

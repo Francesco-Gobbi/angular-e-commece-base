@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ImgbbService } from './imgur.service';
+import { ImgbbService } from './img.service';
 
 describe('ImgbbService', () => {
   let service: ImgbbService;

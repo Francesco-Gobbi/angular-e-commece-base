@@ -56,13 +56,25 @@
             </mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Seleziona Immagine</mat-label>
-              <ngx-mat-file-input formControlName="imageFile"  (change)="onFileSelected($event)" accept="image/*"></ngx-mat-file-input>
+          <mat-form-field appearance="fill">
+            <mat-label>Seleziona un file</mat-label>
+            <input type="file"
+                  hidden
+                  #fileInput
+                  (change)="onFileSelected($event)"
+                  accept="image/*">
+            <input matInput
+                  placeholder="Nessun file selezionato"
+                  [value]="fileName"
+                  (click)="fileInput.click()"
+                  readonly>
+            <button mat-icon-button matSuffix (click)="fileInput.click()">
+              <mat-icon>attach_file</mat-icon>
+            </button>
           </mat-form-field>
 
-          <div *ngIf="previewUrl" class="image-preview">
-            <img [src]="previewUrl" alt="Anteprima immagine" class="preview-image">
+          <div *ngIf="previewUrl" class="image-preview-container">
+            <img [src]="previewUrl" alt="Anteprima immagine" class="image-preview">
           </div>
 
         </form>
