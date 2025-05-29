@@ -139,6 +139,14 @@
             [ngClass]="{ 'bounce-animation': addedToCartMap[row._id] }">
             <mat-icon>add_shopping_cart</mat-icon>
           </button>
+
+          <button mat-icon-button color="primary" *ngIf="isAdmin" (click)="editProduct(row)">
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <button mat-icon-button color="warn" *ngIf="isAdmin" (click)="deleteProduct(row._id)">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
 

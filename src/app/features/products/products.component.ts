@@ -219,9 +219,6 @@ addElementToCart(product: any): void {
     if (this.productForm.valid) {
       const productData = this.productForm.value;
       this.isLoading = true;     
-      if (!productData.imageFile && !productData.imageUrl) {
-          productData.imageUrl = '../../assets/img/placeholder.png';
-      }
 
       if (this.selectedFile) {
         this.imgbbService.uploadImage(this.selectedFile)
@@ -229,32 +226,56 @@ addElementToCart(product: any): void {
         .catch(err =>  this.snackBar.openSnackBar(err,'warning'));
       }
 
-      this.productService
-        .createProduct(productData)
-        .pipe(
-          catchError((error) => {
-            console.error('Error saving product:', error);
-            this.isLoading = false;
-            return of(null);
-          })
-        )
-        .subscribe(
-          (newProduct: Products | null) => {
-            if (newProduct) {
+      if (!productData.imageFile && !productData.imageUrl) {
+          productData.imageUrl = '../../assets/img/placeholder.png';
+      }
+
+      const save = () => {
+        const hasId = !!productData._id;
+
+        const request$ = hasId
+          ? this.productService.updateProduct(productData._id, productData)
+          : this.productService.createProduct(productData);
+
+        request$
+          .pipe(
+            catchError((error) => {
+              console.error('Errore salvataggio:', error);
+              this.isLoading = false;
+              return of(null);
+            })
+          )
+          .subscribe((response: Products | null) => {
+            if (response) {
               this.loadProducts();
               this.dialogRef.close();
+              this.snackBar.openSnackBar(
+                hasId ? 'Prodotto aggiornato' : 'Prodotto creato',
+                'success'
+              );
             }
             this.isLoading = false;
-          },
-          (error) => {
-            console.error('Error saving product:', error);
-            this.isLoading = false;
-          }
-        );
-    } else {
-      this.markFormGroupTouched(this.productForm);
+          });
+      };
+
+        if (this.selectedFile) {
+          this.imgbbService
+            .uploadImage(this.selectedFile)
+            .then((url) => {
+              productData.imageUrl = url;
+              save();
+            })
+            .catch((err) => {
+              this.snackBar.openSnackBar(err, 'warning');
+              this.isLoading = false;
+            });
+        } else {
+          save();
+        }
+      } else {
+        this.markFormGroupTouched(this.productForm);
+      }
     }
-  }
 
     onFileSelected(event: Event): void {
       const input = event.target as HTMLInputElement;
@@ -277,6 +298,50 @@ addElementToCart(product: any): void {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  editProduct(product: Products): void {
+    if (!this.isAdmin) return;
+
+    this.productForm.patchValue({
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
+      categoryId: product.category?._id,
+      description: product.description,
+      imageUrl: product.imageUrl,
+    });
+
+    this.selectedFile = null;
+    this.fileName = null;
+    this.previewUrl = product.imageUrl;
+
+    this.dialogRef = this.dialog.open(this.addProductModal, {
+      width: '500px',
+      disableClose: true,
+    });
+
+    this.productForm.addControl('_id', this.formBuilder.control(product._id));
+  }
+
+  deleteProduct(productId: string): void {
+    if (!this.isAdmin) return;
+
+    if (confirm('Sei sicuro di voler eliminare questo prodotto?')) {
+      this.isLoading = true;
+      this.productService
+        .deleteProduct(productId)
+        .pipe(catchError(error => {
+          console.error('Errore eliminazione:', error);
+          this.snackBar.openSnackBar('Errore durante l\'eliminazione', 'warning');
+          return of(null);
+        }))
+        .subscribe(response => {
+          this.snackBar.openSnackBar('Prodotto eliminato con successo', 'success');
+          this.loadProducts();
+          this.isLoading = false;
+        });
+    }
   }
 
   onImageError(event: Event) {
