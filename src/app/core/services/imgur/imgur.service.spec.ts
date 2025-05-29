@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { ImgurService } from './imgur.service';
+import { ImgbbService } from './imgur.service';
 
-describe('ImgurService', () => {
-  let service: ImgurService;
+describe('ImgbbService', () => {
+  let service: ImgbbService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ImgurService);
+    service = TestBed.inject(ImgbbService);
   });
 
   it('should be created', () => {

@@ -9,8 +9,6 @@ import {MatInputModule} from "@angular/material/input";
 import {MatCardModule} from "@angular/material/card";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
-import {EffectsModule} from "@ngrx/effects";
-import {AuthEffects} from "../../state/auth/effects";
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },

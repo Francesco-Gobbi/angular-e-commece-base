@@ -35,27 +35,6 @@
       <span class="value">{{ data.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
     </div>
   </div>
-  <!-- 
-  <div class="order-items-section" *ngIf="data.items && data.items.length > 0">
-    <h2>Articoli Ordinati</h2>
-    <div class="order-items-list">
-      <div class="order-item" *ngFor="let item of data.items">
-        <span class="item-name">{{ item.name }}</span>
-        <div class="item-details">
-          <span class="item-quantity">Quantità: {{ item.quantity }}</span>
-          <span class="item-price">{{ item.price | currency:'EUR' }}</span>
-        </div>
-      </div>
-    </div>
-    <div class="order-total">
-      <span>Totale Ordine:</span>
-      <span class="total-amount">{{ data.totalAmount | currency:'EUR' }}</span>
-    </div>
-  </div> -->
-
-  <!-- <div class="no-items" *ngIf="!data.items || data.items.length === 0">
-    Nessun articolo nell'ordine
-  </div> -->
 </div>
 
 <div mat-dialog-actions class="dialog-actions">

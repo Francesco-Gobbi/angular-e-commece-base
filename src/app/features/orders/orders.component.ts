@@ -18,9 +18,7 @@ import { Order, OrderItems, User } from '../../shared/types';
 import { Subscription, interval } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { authGuard } from '../../core/guards/auth.guard';
-import { CanActivateFn } from '@angular/router';
-import { AuthState } from '../../state/auth/reducers';
+import { SnackBarService } from '../../shared/components/snack-bar/service/snack-bar.service';
 
 @Component({
   selector: 'OrderTable',
@@ -70,7 +68,7 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
     private orderService: OrdersService,
     private dialog: MatDialog,
     private fb: FormBuilder,
-    // private authService: AuthState
+    private snackBar: SnackBarService
   ) {
     this.editOrderForm = this.fb.group({
       status: ['', Validators.required]
@@ -78,7 +76,6 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.checkAdminRole();
     this.loadOrders();
 
     this.refreshSubscription = interval(30000)
@@ -92,12 +89,6 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
   }
-
-  // checkAdminRole(): void {
-  //   this.authService.getCurrentUser().subscribe((user: User | null) => {
-  //     this.isAdmin = user?.role === 'admin';
-  //   });
-  // }
 
   ngOnDestroy(): void {
     if (this.refreshSubscription) {
@@ -187,9 +178,11 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
   openEditOrder(order: Order): void {
     this.selectedOrder = order;
     this.loading = true;
+
     this.orderService.getOrderById(order._id).subscribe({
       next: (orderDetails) => {
         this.loading = false;
+
         this.editOrderForm.patchValue({
           status: orderDetails.status
         });
@@ -204,7 +197,7 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
       error: (err) => {
         this.loading = false;
         console.error('Errore nel caricamento dei dettagli dell\'ordine', err);
-        this.error = 'Errore nel caricamento dei dettagli dell\'ordine';
+        this.snackBar.openSnackBar('Errore nel caricamento dei dettagli dell\'ordine');
       }
     });
   }
