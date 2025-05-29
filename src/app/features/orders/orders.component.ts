@@ -19,7 +19,7 @@ import { Subscription, interval } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SnackBarService } from '../../shared/components/snack-bar/service/snack-bar.service';
-
+import { AclService } from '../../core/services/acl/acl.service'
 @Component({
   selector: 'OrderTable',
   templateUrl: './orders.component.html',
@@ -45,11 +45,10 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = true;
   error: string | null = null;
   private refreshSubscription: Subscription | null = null;
-  isAdmin = false;
   selectedOrder: Order | null = null;
   editOrderForm: FormGroup;
   orderItems: OrderItems[] = [];
-
+  
   displayedColumns: string[] = [
     'id',
     'orderNumber',
@@ -63,12 +62,17 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('editOrderDialog') editOrderDialog!: TemplateRef<any>;
   @ViewChild('confirmDeleteDialog') confirmDeleteDialog!: TemplateRef<any>;
+  
+  get isAdmin(): boolean {
+    return this.aclService.isAdmin()
+  }
 
   constructor(
     private orderService: OrdersService,
     private dialog: MatDialog,
     private fb: FormBuilder,
-    private snackBar: SnackBarService
+    private snackBar: SnackBarService,
+    private  aclService: AclService
   ) {
     this.editOrderForm = this.fb.group({
       status: ['', Validators.required]
@@ -77,7 +81,6 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadOrders();
-
     this.refreshSubscription = interval(30000)
       .pipe(switchMap(() => this.orderService.getOrders()))
       .subscribe({

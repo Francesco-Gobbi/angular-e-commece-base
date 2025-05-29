@@ -58,10 +58,10 @@
           <button mat-icon-button color="primary" (click)="openOrderDetails(row)" matTooltip="Visualizza dettagli">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button *ngIf="isAdmin" mat-icon-button color="accent" (click)="openEditOrder(row)" matTooltip="Modifica ordine">
+          <button *ngIf="this.isAdmin" mat-icon-button color="accent" (click)="openEditOrder(row)" matTooltip="Modifica ordine">
             <mat-icon>edit</mat-icon>
           </button>
-          <button *ngIf="isAdmin" mat-icon-button color="warn" (click)="deleteOrder(row)" matTooltip="Elimina ordine">
+          <button *ngIf="this.isAdmin" mat-icon-button color="warn" (click)="deleteOrder(row)" matTooltip="Elimina ordine">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

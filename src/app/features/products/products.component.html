@@ -1,13 +1,10 @@
 <div class="orders-container">
-  <div *ngIf="addedToCart" class="added-message">
-    ✅ Oggetto aggiunto al carrello!
-  </div>
   <div class="filter-container">
     <button mat-icon-button color="primary" (click)="goToCart()" aria-label="Vai al carrello">
       <mat-icon>shopping_cart</mat-icon>
     </button>
 
-    <button mat-raised-button color="primary" (click)="openAddProductModal()">
+    <button *ngIf="this.isAdmin" mat-raised-button color="primary" (click)="openAddProductModal()">
       <mat-icon class="mr-1">add</mat-icon> Nuovo Prodotto
     </button>
 
@@ -124,8 +121,10 @@
             <mat-icon>info</mat-icon>
           </button>
 
-          <button mat-icon-button (click)="addElementToCart(row)" aria-label="Aggiungi al carrello"
-            [ngClass]="{'bounce-animation': addedToCart}">
+          <button mat-icon-button (click)="addElementToCart(row)"
+            [disabled]="addedToCartMap[row._id]"
+            aria-label="Aggiungi al carrello"
+            [ngClass]="{ 'bounce-animation': addedToCartMap[row._id] }">
             <mat-icon>add_shopping_cart</mat-icon>
           </button>
         </td>

@@ -1,3 +1,4 @@
+import { SnackBarService } from './../../shared/components/snack-bar/service/snack-bar.service';
 import { Products } from './../../shared/types/index';
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -32,6 +33,7 @@ import { of, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { addToCart } from '../../state/carts/actions';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { AclService } from '../../core/services/acl/acl.service';
 
 @Component({
   selector: 'app-product-list',
@@ -73,13 +75,7 @@ export class ProductListComponent implements OnInit {
   addedToCart = false;
   selectedFile: File | null = null;
   previewUrl: string | null = null;
-
-  canCreateProduct$!: Observable<boolean>;
-  canEditProduct$!: Observable<boolean>;
-  canDeleteProduct$!: Observable<boolean>;
-  canManageCart$!: Observable<boolean>;
-
-
+  
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('addProductModal') addProductModal!: TemplateRef<any>;
@@ -91,10 +87,16 @@ export class ProductListComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private store: Store,
-    private imgbbService: ImgbbService
+    private imgbbService: ImgbbService,
+    private aclService: AclService,
+    private snackBar: SnackBarService
 
   ) {
     this.initializeForm();
+  }
+
+  get isAdmin(): boolean {
+    return this.aclService.isAdmin()
   }
 
   private initializeForm(): void {
@@ -186,24 +188,20 @@ export class ProductListComponent implements OnInit {
     this.router.navigate(['/product-detail', id]);
   }
 
-  addElementToCart(product: Products): void {
-    this.canManageCart$.subscribe(canManage => {
-      if (canManage) {
-        this.store.dispatch(addToCart({ product, quantity: 1 }));
-        this.addedToCart = true;
+addedToCartMap: { [productId: string]: boolean } = {};
 
-        setTimeout(() => {
-          this.addedToCart = false;
+addElementToCart(product: any): void {
+  if (this.addedToCartMap[product._id]) return;
+  this.store.dispatch(addToCart({ product, quantity: 1 }));
+  this.addedToCartMap[product._id] = true;
+  setTimeout(() => {
+    this.addedToCartMap[product._id] = false;
         }, 1000);
-      } else {
-        console.log('Non hai i permessi per gestire il carrello');
-      }
-    });
-  }
+  this.snackBar.openSnackBar(`${product.name} aggiunto al carrello!`, 'success');
+}
 
   openAddProductModal(): void {
-    this.canCreateProduct$.subscribe(canCreate => {
-      if (canCreate) {
+      if (this.isAdmin) {
         this.productForm.reset({
           price: 0,
           stock: 0,
@@ -213,9 +211,8 @@ export class ProductListComponent implements OnInit {
           disableClose: true,
         });
       } else {
-        console.log('Non hai i permessi per creare prodotti');
+        this.snackBar.openSnackBar('Non hai i permessi per creare un ordine')
       }
-    });
   }
 
   saveProduct(): void {
