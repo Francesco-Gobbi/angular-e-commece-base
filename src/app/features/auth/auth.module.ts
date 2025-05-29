@@ -13,7 +13,8 @@ import {EffectsModule} from "@ngrx/effects";
 import {AuthEffects} from "../../state/auth/effects";
 
 export const routes: Routes = [
-  { path: '', component: LoginPageComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginPageComponent },
   { path: 'register', component: RegisterPageComponent },
 ];
 
