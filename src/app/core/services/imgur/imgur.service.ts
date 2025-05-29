@@ -5,25 +5,47 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
-export class ImgurService {
-  private readonly IMGUR_API = 'https://api.imgur.com/3/image';
+export class ImgbbService {
+  private readonly IMGBB_API = 'https://api.imgbb.com/1/upload';
 
   constructor(private http: HttpClient) {}
 
   uploadImage(file: File): Promise<string> {
-    const formData = new FormData();
-    formData.append('image', file);
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
 
-    const headers = new HttpHeaders({
-      'Authorization': `Client-ID ${environment.imgId}`
+      reader.onload = () => {
+        const base64Image = (reader.result as string).split(',')[1];
+
+        const body = `key=${encodeURIComponent(environment.imgKey)}&image=${encodeURIComponent(base64Image)}`;
+
+        const headers = new HttpHeaders({
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Origin': environment.corsOrigin
+        });
+
+        this.http.post<any>(this.IMGBB_API, body, { headers })
+          .toPromise()
+          .then(response => {
+            if (response?.success) {
+              resolve(response.data.url);
+            } else {
+              reject('Upload fallito: risposta non valida');
+            }
+          })
+          .catch(error => {
+            console.error('Errore durante l’upload su ImgBB:', error);
+            reject(error);
+          });
+      };
+
+      reader.onerror = error => {
+        console.error('Errore FileReader:', error);
+        reject(error);
+      };
+
+      reader.readAsDataURL(file);
     });
-
-    return this.http.post<any>(this.IMGUR_API, formData, { headers })
-      .toPromise()
-      .then(response => response.data.link)
-      .catch(error => {
-        console.error('Imgur upload error:', error);
-        throw error;
-      });
   }
 }
+
