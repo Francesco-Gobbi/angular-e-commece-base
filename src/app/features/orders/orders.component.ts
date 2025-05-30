@@ -180,28 +180,13 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openEditOrder(order: Order): void {
     this.selectedOrder = order;
-    this.loading = true;
+    this.editOrderForm.patchValue({
+      status: order.status
+    });
 
-    this.orderService.getOrderById(order._id).subscribe({
-      next: (orderDetails) => {
-        this.loading = false;
-
-        this.editOrderForm.patchValue({
-          status: orderDetails.status
-        });
-
-        this.orderItems = orderDetails.items ? [...orderDetails.items] : [];
-
-        this.dialog.open(this.editOrderDialog, {
-          width: '600px',
-          disableClose: true
-        });
-      },
-      error: (err) => {
-        this.loading = false;
-        console.error('Errore nel caricamento dei dettagli dell\'ordine', err);
-        this.snackBar.openSnackBar('Errore nel caricamento dei dettagli dell\'ordine');
-      }
+    this.dialog.open(this.editOrderDialog, {
+      width: '400px',
+      disableClose: true
     });
   }
 
@@ -219,12 +204,13 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
     this.orderService.deleteOrders(this.selectedOrder._id).subscribe({
       next: () => {
         this.dialog.closeAll();
+        this.snackBar.openSnackBar('Ordine eliminato con successo');
         this.refreshOrders();
       },
       error: (err) => {
         this.loading = false;
         console.error('Errore durante l\'eliminazione dell\'ordine', err);
-        this.error = 'Errore durante l\'eliminazione dell\'ordine';
+        this.snackBar.openSnackBar('Errore durante l\'eliminazione dell\'ordine');
       }
     });
   }
@@ -253,21 +239,19 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.selectedOrder || !this.editOrderForm.valid) return;
 
     const updatedOrder: Partial<Order> = {
-      ...this.editOrderForm.value,
-      items: this.orderItems,
-      totalAmount: this.calculateTotalAmount()
+      status: this.editOrderForm.get('status')?.value
     };
 
     this.loading = true;
     this.orderService.updateOrders(this.selectedOrder._id, updatedOrder).subscribe({
       next: () => {
         this.dialog.closeAll();
+        this.snackBar.openSnackBar('Stato ordine aggiornato con successo');
         this.refreshOrders();
       },
       error: (err) => {
         this.loading = false;
-        console.error('Errore durante l\'aggiornamento dell\'ordine', err);
-        this.error = 'Errore durante l\'aggiornamento dell\'ordine';
+        this.snackBar.openSnackBar('Errore durante l\'aggiornamento dell\'ordine');
       }
     });
   }

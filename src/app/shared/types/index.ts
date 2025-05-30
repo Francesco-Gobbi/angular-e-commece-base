@@ -70,3 +70,47 @@ export type Cart = {
 export type CartItem = Products & {
   quantity: number;
 };
+
+export interface PaginatedOrdersResponse {
+  orders: Order[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+}
+
+export interface OrdersQueryParams {
+  page?: number;
+  limit?: number;
+  sort?: string[];
+  fields?: string[];
+  [key: string]: any;
+}
+
+
+export interface DashboardMetrics {
+  totalSales: number;
+  totalOrders: number;
+  totalProducts: number;
+  averageOrderValue: number;
+}
+
+export interface SalesByDay {
+  date: string;
+  sales: number;
+  orders: number;
+}
+
+export interface SalesByCategory {
+  category: string;
+  sales: number;
+  percentage: number;
+}
+
+export interface RecentOrder {
+  id: string;
+  orderNumber: number;
+  customerName: string;
+  totalAmount: number;
+  status: 'pending' | 'completed' | 'cancelled';
+  createdAt: string;
+}
