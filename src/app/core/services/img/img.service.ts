@@ -1,4 +1,3 @@
-import { environment } from '@/environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
@@ -18,7 +17,6 @@ export class ImgbbService {
         const base64Image = (reader.result as string).split(',')[1];
 
         const body = new URLSearchParams();
-        body.set('key', environment.imgKey);
         body.set('image', base64Image);
 
         const headers = new HttpHeaders({
