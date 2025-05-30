@@ -27,7 +27,7 @@ import { ImgbbService } from '../../core/services/img/img.service';
 
 import { ProductService } from '../../core/services/products/product.service';
 import { CategoryService } from '../../core/services/categories/category.service';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, take } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { addToCart } from '../../state/carts/actions';
@@ -65,8 +65,10 @@ export class ProductListComponent implements OnInit {
     'category',
     'actions',
   ];
-  
-  dataSource: MatTableDataSource<Products> = new MatTableDataSource<Products>([]);
+
+  dataSource: MatTableDataSource<Products> = new MatTableDataSource<Products>(
+    []
+  );
   productForm!: FormGroup;
   categories: any[] = [];
   dialogRef!: MatDialogRef<any>;
@@ -77,7 +79,7 @@ export class ProductListComponent implements OnInit {
   selectedFile: File | null = null;
   imageUrl: string = '';
   cartItems$ = this.store.select(selectCartItems);
-    
+
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('addProductModal') addProductModal!: TemplateRef<any>;
@@ -97,7 +99,7 @@ export class ProductListComponent implements OnInit {
   }
 
   get isAdmin(): boolean {
-    return this.aclService.isAdmin()
+    return this.aclService.isAdmin();
   }
 
   private initializeForm(): void {
@@ -150,18 +152,18 @@ export class ProductListComponent implements OnInit {
 
   canAddToCart(product: Products): Observable<boolean> {
     return this.cartItems$.pipe(
-      map(cartItems => {
-        const cartItem = cartItems.find(item => item._id === product._id);
-        const currentQuantityInCart = cartItem ? cartItem.quantity : 0;
-        return product.stock > currentQuantityInCart;
+      map((cartItems) => {
+        const itemInCart = cartItems.find((item) => item._id === product._id);
+        const quantityInCart = itemInCart?.quantity ?? 0;
+        return quantityInCart < product.stock;
       })
     );
   }
 
   getAvailableQuantity(product: Products): Observable<number> {
     return this.cartItems$.pipe(
-      map(cartItems => {
-        const cartItem = cartItems.find(item => item._id === product._id);
+      map((cartItems) => {
+        const cartItem = cartItems.find((item) => item._id === product._id);
         const currentQuantityInCart = cartItem ? cartItem.quantity : 0;
         return product.stock - currentQuantityInCart;
       })
@@ -169,32 +171,36 @@ export class ProductListComponent implements OnInit {
   }
 
   applyFilter(event: Event): void {
-          const inputValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    const inputValue = (event.target as HTMLInputElement).value
+      .trim()
+      .toLowerCase();
 
-      if (inputValue.startsWith('#nome')) {
-        const filter = inputValue.substring(5).trim();
-        this.dataSource.filterPredicate = (data: Products, filter: string) => data.name?.toLowerCase().includes(filter) ?? false;
-        this.dataSource.filter = filter;
-
-      } else if (inputValue.startsWith('#categoria')) {
-        const filter = inputValue.substring(10).trim();
-        this.dataSource.filterPredicate = (data: Products, filter: string) => data.category?.name?.toLowerCase().includes(filter) ?? false;
-        this.dataSource.filter = filter;
-
-      } else if (inputValue.startsWith('#prezzo')) {
-        const filter = inputValue.substring(8).trim();
-        this.dataSource.filterPredicate = (data: Products, filter: string) => data.price.toString().includes(filter);
-        this.dataSource.filter = filter;
-
-      } else {
-        this.dataSource.filterPredicate = (data: Products, filter: string) => {
-          const nameMatch = data.name?.toLowerCase().includes(filter) ?? false;
-          const descMatch = data.description?.toLowerCase().includes(filter) ?? false;
-          const catMatch = data.category?.name?.toLowerCase().includes(filter) ?? false;
-          return nameMatch || descMatch || catMatch;
-        };
-        this.dataSource.filter = inputValue;
-      }
+    if (inputValue.startsWith('#nome')) {
+      const filter = inputValue.substring(5).trim();
+      this.dataSource.filterPredicate = (data: Products, filter: string) =>
+        data.name?.toLowerCase().includes(filter) ?? false;
+      this.dataSource.filter = filter;
+    } else if (inputValue.startsWith('#categoria')) {
+      const filter = inputValue.substring(10).trim();
+      this.dataSource.filterPredicate = (data: Products, filter: string) =>
+        data.category?.name?.toLowerCase().includes(filter) ?? false;
+      this.dataSource.filter = filter;
+    } else if (inputValue.startsWith('#prezzo')) {
+      const filter = inputValue.substring(8).trim();
+      this.dataSource.filterPredicate = (data: Products, filter: string) =>
+        data.price.toString().includes(filter);
+      this.dataSource.filter = filter;
+    } else {
+      this.dataSource.filterPredicate = (data: Products, filter: string) => {
+        const nameMatch = data.name?.toLowerCase().includes(filter) ?? false;
+        const descMatch =
+          data.description?.toLowerCase().includes(filter) ?? false;
+        const catMatch =
+          data.category?.name?.toLowerCase().includes(filter) ?? false;
+        return nameMatch || descMatch || catMatch;
+      };
+      this.dataSource.filter = inputValue;
+    }
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
@@ -214,24 +220,34 @@ export class ProductListComponent implements OnInit {
   addElementToCart(product: Products): void {
     if (this.addedToCartMap[product._id]) return;
 
-    this.canAddToCart(product).subscribe(canAdd => {
-      if (!canAdd) {
-        this.snackBar.openSnackBar('Prodotto non disponibile o quantità massima raggiunta', 'warning');
-        return;
-      }
+    this.canAddToCart(product)
+      .pipe(take(1)) 
+      .subscribe((canAdd) => {
+        if (!canAdd) {
+          this.snackBar.openSnackBar(
+            'Prodotto non disponibile o quantità massima raggiunta',
+            'warning'
+          );
+          return;
+        }
 
-      if (product.stock <= 0) {
-        this.snackBar.openSnackBar('Prodotto non disponibile', 'warning');
-        return;
-      }
+        if (product.stock <= 0) {
+          this.snackBar.openSnackBar('Prodotto non disponibile', 'warning');
+          return;
+        }
 
-      this.store.dispatch(addToCart({ product, quantity: 1 }));
-      this.addedToCartMap[product._id] = true;
-      setTimeout(() => {
-        this.addedToCartMap[product._id] = false;
-      }, 1000);
-      this.snackBar.openSnackBar(`${product.name} aggiunto al carrello!`, 'success');
-    });
+        this.store.dispatch(addToCart({ product, quantity: 1 }));
+        this.addedToCartMap[product._id] = true;
+
+        setTimeout(() => {
+          this.addedToCartMap[product._id] = false;
+        }, 1000);
+
+        this.snackBar.openSnackBar(
+          `${product.name} aggiunto al carrello!`,
+          'success'
+        );
+      });
   }
 
   openAddProductModal(): void {
@@ -245,23 +261,27 @@ export class ProductListComponent implements OnInit {
         disableClose: true,
       });
     } else {
-      this.snackBar.openSnackBar('Non hai i permessi per creare un prodotto', 'warning');
+      this.snackBar.openSnackBar(
+        'Non hai i permessi per creare un prodotto',
+        'warning'
+      );
     }
   }
 
   saveProduct(): void {
     if (this.productForm.valid) {
       const productData = this.productForm.value;
-      this.isLoading = true;     
+      this.isLoading = true;
 
       if (this.selectedFile) {
-        this.imgbbService.uploadImage(this.selectedFile)
-        .then(url=> this.imageUrl = url)
-        .catch(err =>  this.snackBar.openSnackBar(err,'warning'));
+        this.imgbbService
+          .uploadImage(this.selectedFile)
+          .then((url) => (this.imageUrl = url))
+          .catch((err) => this.snackBar.openSnackBar(err, 'warning'));
       }
 
       if (!productData.imageFile && !productData.imageUrl) {
-          productData.imageUrl = '../../assets/img/placeholder.png';
+        productData.imageUrl = '../../assets/img/placeholder.png';
       }
 
       const save = () => {
@@ -365,13 +385,21 @@ export class ProductListComponent implements OnInit {
       this.isLoading = true;
       this.productService
         .deleteProduct(productId)
-        .pipe(catchError(error => {
-          console.error('Errore eliminazione:', error);
-          this.snackBar.openSnackBar('Errore durante l\'eliminazione', 'warning');
-          return of(null);
-        }))
-        .subscribe(response => {
-          this.snackBar.openSnackBar('Prodotto eliminato con successo', 'success');
+        .pipe(
+          catchError((error) => {
+            console.error('Errore eliminazione:', error);
+            this.snackBar.openSnackBar(
+              "Errore durante l'eliminazione",
+              'warning'
+            );
+            return of(null);
+          })
+        )
+        .subscribe((response) => {
+          this.snackBar.openSnackBar(
+            'Prodotto eliminato con successo',
+            'success'
+          );
           this.loadProducts();
           this.isLoading = false;
         });
