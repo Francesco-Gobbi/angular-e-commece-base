@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../../environments/environment.development';
-import {ApiQueryParams, OrdersResponse, UsersResponse, } from '../../../../shared/types/index'
+import { environment } from '@env/environment.development';
+import {ApiQueryParams, OrdersResponse, UsersResponse, } from '../../../../shared/types'
 /**
  * Service for making API calls to the backend
  */
@@ -10,7 +10,7 @@ import {ApiQueryParams, OrdersResponse, UsersResponse, } from '../../../../share
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly baseUrl = ; // Sostituisci con il tuo URL
+  private readonly baseUrl = environment.apiUrl; // Sostituisci con il tuo URL
 
   constructor(private http: HttpClient) {}
 

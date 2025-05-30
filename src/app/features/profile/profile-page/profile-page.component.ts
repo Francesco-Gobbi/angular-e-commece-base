@@ -37,6 +37,7 @@ export class ProfilePageComponent implements OnInit {
   user: User | null = null;
 
   role: string = '';
+  name: string = '';
   email: string = '';
 
   constructor(private snackBarService: SnackBarService, private store: Store) {
@@ -50,6 +51,7 @@ export class ProfilePageComponent implements OnInit {
         this.user = user;
         this.role = user.role;
         this.email = user.email;
+        this.name = user.name;
       }
     });
   }
@@ -59,7 +61,8 @@ export class ProfilePageComponent implements OnInit {
       const updatedUser: User = {
         ...this.user,
         role: this.role,
-        email: this.email
+        email: this.email,
+        name: this.name
       };
       this.store.dispatch(updateUser({ user: updatedUser }));
     }

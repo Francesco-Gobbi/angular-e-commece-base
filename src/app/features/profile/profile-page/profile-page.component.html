@@ -21,8 +21,13 @@
 
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>Email</mat-label>
-            <input matInput [(ngModel)]="email" name="email" />
+            <input matInput disabled [(ngModel)]="email" name="email" />
             <mat-icon matSuffix>email</mat-icon>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="name" name="name" />
+            <mat-icon matSuffix>name</mat-icon>
           </mat-form-field>
         </div>
 
