@@ -121,14 +121,10 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Azioni</th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button (click)="deleteElement(row._id)">
-            <mat-icon>delete</mat-icon>
-          </button>
           <button mat-icon-button (click)="goToProductDetail(row._id)" aria-label="Dettagli prodotto">
             <mat-icon>info</mat-icon>
           </button>
-          <button mat-icon-button (click)="addElementToCart(row)" [disabled]="addedToCartMap[row._id]"
-            aria-label="Aggiungi al carrello" [ngClass]="{ 'bounce-animation': addedToCartMap[row._id] }">
+          <button [disabled]="itemDisabledMap[row._id] | async" mat-icon-button (click)="addElementToCart(row)">
             <mat-icon>add_shopping_cart</mat-icon>
           </button>
 

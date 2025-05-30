@@ -137,7 +137,6 @@ export class ProductListComponent implements OnInit {
         this.dataSource.sort = this.sort;
         this.isLoading = false;
 
-        // 👉 Popola la mappa con gli observable per ogni prodotto
         products.forEach((product) => {
           this.itemDisabledMap[product._id] = this.store.select(
             selectItemExistInCart(product._id)

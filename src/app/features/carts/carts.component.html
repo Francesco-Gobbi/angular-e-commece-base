@@ -42,21 +42,13 @@
                 <div class="quantity-control">
                   <p><strong>Quantità:</strong></p>
                   <div class="quantity-actions">
-                    <button 
-                      mat-icon-button 
-                      color="primary" 
-                      (click)="decreaseQuantity(item)"
-                      [disabled]="!canDecreaseQuantity(item)"
-                      aria-label="Diminuisci quantità">
+                    <button mat-icon-button color="primary" (click)="decreaseQuantity(item)"
+                      [disabled]="!canDecreaseQuantity(item)" aria-label="Diminuisci quantità">
                       <mat-icon>remove</mat-icon>
                     </button>
                     <span class="quantity-value">{{ item.quantity }}</span>
-                    <button 
-                      mat-icon-button 
-                      color="primary" 
-                      (click)="increaseQuantity(item)"
-                      [disabled]="!canIncreaseQuantity(item)"
-                      aria-label="Aumenta quantità">
+                    <button mat-icon-button color="primary" (click)="increaseQuantity(item)"
+                      [disabled]="!canIncreaseQuantity(item)" aria-label="Aumenta quantità">
                       <mat-icon>add</mat-icon>
                     </button>
                   </div>
@@ -84,11 +76,7 @@
               Totale: <strong>{{ getItemSubtotal(item) | currency:'EUR':'symbol':'1.2-2' }}</strong>
             </p>
           </div>
-          <button 
-            mat-icon-button 
-            color="warn" 
-            (click)="removeFromCart(item)" 
-            aria-label="Rimuovi dal carrello">
+          <button mat-icon-button color="warn" (click)="removeFromCart(item)" aria-label="Rimuovi dal carrello">
             <mat-icon>delete</mat-icon>
           </button>
         </mat-card-actions>
@@ -114,11 +102,7 @@
             <button mat-stroked-button color="primary" (click)="goBack()">
               Continua shopping
             </button>
-            <button 
-              mat-raised-button 
-              color="primary" 
-              (click)="checkout()"
-              [disabled]="items.length === 0">
+            <button mat-raised-button color="primary" (click)="checkout()" [disabled]="items.length === 0">
               Procedi all'ordine
             </button>
           </mat-card-actions>
