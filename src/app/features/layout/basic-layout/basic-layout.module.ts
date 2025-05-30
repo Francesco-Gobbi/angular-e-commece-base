@@ -1,3 +1,4 @@
+import { DashboardComponent } from './../../graph/graph.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +19,7 @@ export const routes: Routes = [
   { path: 'carts', component: CartComponent },
   { path: 'categories', component: CategoryComponent, canActivate: [adminOnlyGuard] },
   { path: 'profile', component: ProfilePageComponent },
+  { path: 'graph', component: DashboardComponent },
 ];
 
 @NgModule({

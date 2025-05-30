@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, map, takeUntil } from 'rxjs';
+import { Observable, Subject, forkJoin, map, take, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import {
@@ -17,9 +17,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CartItem, Order, OrderStatuses, User } from '../../shared/types';
+import { CartItem, Order, OrderStatuses, Products, User } from '../../shared/types';
 import { OrdersService } from '../../core/services/orders/orders.service';
 import { selectUser } from '../../state/auth/selectors';
+import { ProductService } from '../../core/services/products/product.service';
 
 @Component({
   selector: 'app-cart',
@@ -44,13 +45,14 @@ export class CartComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   user: User | null = null;
 
-  constructor(
-    private orderService: OrdersService,
-    private store: Store,
-    private router: Router
-  ) {
-    this.user$ = this.store.select(selectUser);
-  }
+constructor(
+  private orderService: OrdersService,
+  private productService: ProductService,
+  private store: Store,
+  private router: Router
+) {
+  this.user$ = this.store.select(selectUser);
+}
 
   ngOnInit() {
     this.store.dispatch(loadCart());
@@ -125,36 +127,48 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   checkout() {
-    console.log('Starting checkout process');
-    
-    this.totalAmount$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(totalAmount => {
-      if (!this.user) {
-        console.error('User not found, cannot proceed with checkout');
-        return;
-      }
+  forkJoin({
+    items: this.items$.pipe(take(1)),
+    totalAmount: this.totalAmount$.pipe(take(1))
+  }).subscribe(({ items, totalAmount }) => {
+    if (!this.user) {
+      console.error('User not found, cannot proceed with checkout');
+      return;
+    }
 
-      const order: Order = {
-        orderNumber: this.generateOrderNumber(),
-        totalAmount: totalAmount,
-        status: OrderStatuses.PENDING,
-        userId: this.user._id,
-      } as Order;
+    if (items.length === 0) {
+      console.error('Cart is empty, cannot proceed with checkout');
+      return;
+    }
 
-      this.orderService.createOrders(order).subscribe({
-        next: (res) => {
-          console.log('Order created successfully:', res);
-          this.store.dispatch(clearCart());
-          this.clearLocalStorage();
-          this.router.navigate(['/orders']);
-        },
-        error: (err) => {
-          console.error("Errore durante la creazione dell'ordine:", err);
-        },
-      });
+    const order: Order = {
+      orderNumber: this.generateOrderNumber(),
+      totalAmount: totalAmount,
+      status: OrderStatuses.PENDING,
+      userId: this.user._id,
+    } as Order;
+
+    this.orderService.createOrders(order).subscribe({
+      next: (createdOrder) => {
+        this.updateProductsStock(items).subscribe({
+          next: (updatedProducts) => {
+            this.store.dispatch(clearCart());
+            this.clearLocalStorage();
+            this.router.navigate(['/orders']);
+          },
+          error: (err) => {
+            this.store.dispatch(clearCart());
+            this.clearLocalStorage();
+            this.router.navigate(['/orders']);
+          }
+        });
+      },
+      error: (err) => {
+        console.error("Errore durante la creazione dell'ordine:", err);
+      },
     });
-  }
+  });
+}
 
   private clearLocalStorage() {
     try {
@@ -172,6 +186,19 @@ export class CartComponent implements OnInit, OnDestroy {
     const random = Math.floor(Math.random() * 1000);
     return `ORD-${timestamp}-${random}`;
   }
+
+  private updateProductsStock(cartItems: CartItem[]): Observable<Products[]> {
+    const stockUpdates = cartItems.map(item => ({
+      productId: item._id,
+      newStock: item.stock - item.quantity
+    }));
+
+    console.log('Updating stock for products:', stockUpdates);
+    
+    return this.productService.updateMultipleProductsStock(stockUpdates);
+  }
+
+
 
   isItemInStock(item: CartItem): boolean {
     return item.stock > 0;
