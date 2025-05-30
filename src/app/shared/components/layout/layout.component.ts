@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { CommonModule } from '@angular/common';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -26,15 +26,21 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   styleUrls: ['./layout.component.scss'],
 })
 export class LayoutComponent implements OnInit {
-  isDesktop: boolean = true;
+  isDesktop = window.innerWidth >= 1024;
 
   constructor(private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit() {
+    this.isDesktop = window.innerWidth >= 1024;
     this.breakpointObserver
       .observe([Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge])
       .subscribe((result) => {
         this.isDesktop = result.matches;
       });
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.isDesktop = window.innerWidth >= 1024;
   }
 }

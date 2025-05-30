@@ -14,12 +14,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import {Order} from '../../shared/types';
-import {of, Subscription} from 'rxjs';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Order } from '../../shared/types';
+import { of, Subscription } from 'rxjs';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { SnackBarService } from '../../shared/components/snack-bar/service/snack-bar.service';
-import { AclService } from '../../core/services/acl/acl.service'
-import {catchError} from "rxjs/operators";
+import { AclService } from '../../core/services/acl/acl.service';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'OrderTable',
@@ -39,7 +44,7 @@ import {catchError} from "rxjs/operators";
     MatSortModule,
     MatDialogModule,
     MatSelectModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
 })
 export class OrdersTableComponent implements OnInit {
@@ -50,7 +55,6 @@ export class OrdersTableComponent implements OnInit {
   editOrderForm: FormGroup;
 
   displayedColumns: string[] = [
-    'id',
     'orderNumber',
     'totalAmount',
     'status',
@@ -64,7 +68,7 @@ export class OrdersTableComponent implements OnInit {
   @ViewChild('confirmDeleteDialog') confirmDeleteDialog!: TemplateRef<any>;
 
   get isAdmin(): boolean {
-    return this.aclService.isAdmin()
+    return this.aclService.isAdmin();
   }
 
   constructor(
@@ -72,10 +76,10 @@ export class OrdersTableComponent implements OnInit {
     private dialog: MatDialog,
     private fb: FormBuilder,
     private snackBar: SnackBarService,
-    private  aclService: AclService
+    private aclService: AclService
   ) {
     this.editOrderForm = this.fb.group({
-      status: ['', Validators.required]
+      status: ['', Validators.required],
     });
   }
 
@@ -85,19 +89,22 @@ export class OrdersTableComponent implements OnInit {
 
   loadOrders(): void {
     this.loading = true;
-    this.orderService.getOrders().pipe(
-      catchError((error) => {
-        console.error('Errore nel caricamento degli ordini', error);
-        this.error = 'Errore nel caricamento degli ordini';
-        this.loading = false;
-        return of([]);
-      })
-    ).subscribe((orders: Order[]) => {
+    this.orderService
+      .getOrders()
+      .pipe(
+        catchError((error) => {
+          console.error('Errore nel caricamento degli ordini', error);
+          this.error = 'Errore nel caricamento degli ordini';
+          this.loading = false;
+          return of([]);
+        })
+      )
+      .subscribe((orders: Order[]) => {
         this.dataSource = new MatTableDataSource(orders);
         this.dataSource.paginator = this.paginator;
         this.loading = false;
         this.dataSource.sort = this.sort;
-    });
+      });
   }
 
   applyFilter(event: Event): void {
@@ -120,7 +127,10 @@ export class OrdersTableComponent implements OnInit {
       this.dataSource.filter = filter;
     } else {
       this.dataSource.filterPredicate = (data: Order, filter: string) => {
-        const matchOrder = data.orderNumber.toString().toLowerCase().includes(filter);
+        const matchOrder = data.orderNumber
+          .toString()
+          .toLowerCase()
+          .includes(filter);
         const matchAmount = data.totalAmount.toString().includes(filter);
         const matchStatus = data.status.toLowerCase().includes(filter);
 
@@ -142,33 +152,33 @@ export class OrdersTableComponent implements OnInit {
         this.dialog.open(OrderDetailsComponent, {
           width: '550px',
           data: orderDetails,
-          panelClass: 'order-details-dialog'
+          panelClass: 'order-details-dialog',
         });
       },
       error: (err) => {
         this.loading = false;
-        console.error('Errore nel caricamento dei dettagli dell\'ordine', err);
-        this.error = 'Errore nel caricamento dei dettagli dell\'ordine';
-      }
+        console.error("Errore nel caricamento dei dettagli dell'ordine", err);
+        this.error = "Errore nel caricamento dei dettagli dell'ordine";
+      },
     });
   }
 
   openEditOrder(order: Order): void {
     this.selectedOrder = order;
     this.editOrderForm.patchValue({
-      status: order.status
+      status: order.status,
     });
 
     this.dialog.open(this.editOrderDialog, {
       width: '400px',
-      disableClose: true
+      disableClose: true,
     });
   }
 
   deleteOrder(order: Order): void {
     this.selectedOrder = order;
     this.dialog.open(this.confirmDeleteDialog, {
-      width: '400px'
+      width: '400px',
     });
   }
 
@@ -184,9 +194,9 @@ export class OrdersTableComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        console.error('Errore durante l\'eliminazione dell\'ordine', err);
-        this.snackBar.openSnackBar('Errore durante l\'eliminazione dell\'ordine');
-      }
+        console.error("Errore durante l'eliminazione dell'ordine", err);
+        this.snackBar.openSnackBar("Errore durante l'eliminazione dell'ordine");
+      },
     });
   }
 
@@ -194,20 +204,24 @@ export class OrdersTableComponent implements OnInit {
     if (!this.selectedOrder || !this.editOrderForm.valid) return;
 
     const updatedOrder: Partial<Order> = {
-      status: this.editOrderForm.get('status')?.value
+      status: this.editOrderForm.get('status')?.value,
     };
 
     this.loading = true;
-    this.orderService.updateOrders(this.selectedOrder._id, updatedOrder).subscribe({
-      next: () => {
-        this.dialog.closeAll();
-        this.snackBar.openSnackBar('Stato ordine aggiornato con successo');
-        this.loadOrders();
-      },
-      error: (err) => {
-        this.loading = false;
-        this.snackBar.openSnackBar('Errore durante l\'aggiornamento dell\'ordine');
-      }
-    });
+    this.orderService
+      .updateOrders(this.selectedOrder._id, updatedOrder)
+      .subscribe({
+        next: () => {
+          this.dialog.closeAll();
+          this.snackBar.openSnackBar('Stato ordine aggiornato con successo');
+          this.loadOrders();
+        },
+        error: (err) => {
+          this.loading = false;
+          this.snackBar.openSnackBar(
+            "Errore durante l'aggiornamento dell'ordine"
+          );
+        },
+      });
   }
 }
