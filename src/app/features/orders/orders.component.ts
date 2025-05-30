@@ -14,12 +14,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import {Order, OrderItems} from '../../shared/types';
+import {Order} from '../../shared/types';
 import {of, Subscription} from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SnackBarService } from '../../shared/components/snack-bar/service/snack-bar.service';
 import { AclService } from '../../core/services/acl/acl.service'
 import {catchError} from "rxjs/operators";
+
 @Component({
   selector: 'OrderTable',
   templateUrl: './orders.component.html',
@@ -47,7 +48,6 @@ export class OrdersTableComponent implements OnInit {
   private refreshSubscription: Subscription | null = null;
   selectedOrder: Order | null = null;
   editOrderForm: FormGroup;
-  orderItems: OrderItems[] = [];
 
   displayedColumns: string[] = [
     'id',
@@ -188,26 +188,6 @@ export class OrdersTableComponent implements OnInit {
         this.snackBar.openSnackBar('Errore durante l\'eliminazione dell\'ordine');
       }
     });
-  }
-
-  increaseQuantity(index: number): void {
-    this.orderItems[index].quantity += 1;
-  }
-
-  decreaseQuantity(index: number): void {
-    if (this.orderItems[index].quantity > 1) {
-      this.orderItems[index].quantity -= 1;
-    }
-  }
-
-  removeItem(index: number): void {
-    this.orderItems.splice(index, 1);
-  }
-
-  calculateTotalAmount(): number {
-    return this.orderItems.reduce((total, item) => {
-      return total + (item.price * item.quantity);
-    }, 0);
   }
 
   saveOrderChanges(): void {

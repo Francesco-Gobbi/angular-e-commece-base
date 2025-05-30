@@ -19,7 +19,7 @@ export const routes: Routes = [
   { path: 'carts', component: CartComponent },
   { path: 'categories', component: CategoryComponent, canActivate: [adminOnlyGuard] },
   { path: 'profile', component: ProfilePageComponent },
-  { path: 'graph', component: DashboardComponent },
+  { path: 'dashboard', component: DashboardComponent },
 ];
 
 @NgModule({

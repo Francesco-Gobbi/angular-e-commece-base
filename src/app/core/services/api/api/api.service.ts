@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '@env/environment.development';
+import { environment } from '../../../../../environments/environment.development';
 import {ApiQueryParams, OrdersResponse, UsersResponse, } from '../../../../shared/types'
 /**
  * Service for making API calls to the backend

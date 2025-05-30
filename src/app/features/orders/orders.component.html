@@ -93,43 +93,11 @@
           </mat-select>
         </mat-form-field>
       </div>
-
-      <div class="order-items-section" *ngIf="orderItems.length > 0">
-        <h3>Articoli dell'ordine</h3>
-        <div class="order-items-list">
-          <div class="order-item" *ngFor="let item of orderItems; let i = index">
-            <div class="item-details">
-              <span class="item-name">{{ item.name }}</span>
-              <div class="item-quantity-controls">
-                <button mat-icon-button color="primary" (click)="decreaseQuantity(i)" [disabled]="item.quantity <= 1">
-                  <mat-icon>remove</mat-icon>
-                </button>
-                <span class="item-quantity">{{ item.quantity }}</span>
-                <button mat-icon-button color="primary" (click)="increaseQuantity(i)">
-                  <mat-icon>add</mat-icon>
-                </button>
-              </div>
-              <span class="item-price">{{ item.price | currency:'EUR' }}</span>
-              <button mat-icon-button color="warn" (click)="removeItem(i)" matTooltip="Rimuovi articolo">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="order-total">
-          <span>Totale Ordine:</span>
-          <span class="total-amount">{{ calculateTotalAmount() | currency:'EUR' }}</span>
-        </div>
-      </div>
-
-      <div class="no-items" *ngIf="orderItems.length === 0">
-        <p>Nessun articolo nell'ordine</p>
-      </div>
     </form>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Annulla</button>
-    <button mat-raised-button color="primary" [disabled]="editOrderForm.invalid || orderItems.length === 0" (click)="saveOrderChanges()">Salva Modifiche</button>
+    <button mat-raised-button color="primary" [disabled]="editOrderForm.invalid" (click)="saveOrderChanges()">Salva Modifiche</button>
   </mat-dialog-actions>
 </ng-template>
 

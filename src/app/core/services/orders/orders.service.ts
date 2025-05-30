@@ -13,7 +13,23 @@ export class OrdersService {
   private orderCountSubject = new BehaviorSubject<number>(0);
   public orderCount$ = this.orderCountSubject.asObservable();
 
-  constructor(private http: AuthApiService) {}
+  private isOrderCountInitialized = false;
+
+  constructor(private http: AuthApiService) {
+    this.initializeOrderCount();
+  }
+
+  private initializeOrderCount(): void {
+      if (this.isOrderCountInitialized) return;
+      
+      this.getOrders().subscribe(orders => {
+        if (orders.length > 0) {
+          const maxOrderNumber = Math.max(...orders.map(order => Number(order.orderNumber) || 0));
+          this.orderCountSubject.next(maxOrderNumber);
+        }
+        this.isOrderCountInitialized = true;
+      });
+    }
 
   getOrdersPaginated(params?: OrdersQueryParams): Observable<PaginatedOrdersResponse> {
     let httpParams = new HttpParams();
@@ -55,7 +71,11 @@ export class OrdersService {
   getOrders(): Observable<Order[]> {
     return this.http
       .get<Order[]>(this.endpoint)
-      .pipe(map((res) => res || []));
+      .pipe(map((res) => res || []),
+      tap((orders) => {
+          this.ordersSubject.next(orders);
+        })
+    );
   }
 
   getOrderById(id: string): Observable<Order> {
@@ -65,6 +85,10 @@ export class OrdersService {
   }
 
   createOrders(body: Omit<Order, '_id' | 'createdAt' | 'updatedAt'>): Observable<Order> {
+    if (!this.isOrderCountInitialized) {
+      this.initializeOrderCount();
+    }
+    
     const currentOrderNumber = this.orderCountSubject.getValue();
     const newOrder = {
       ...body,
@@ -75,6 +99,9 @@ export class OrdersService {
       map((res) => res),
       tap((createdOrder) => {
         this.orderCountSubject.next(Number(createdOrder.orderNumber));
+        
+        const currentOrders = this.ordersSubject.getValue();
+        this.ordersSubject.next([...currentOrders, createdOrder]);
       })
     );
   }
@@ -86,10 +113,33 @@ export class OrdersService {
 
     return this.http
       .put<Order>(`${this.endpoint}/${id}`, body)
-      .pipe(map((res) => res));
+      .pipe(map((res) => res),
+      tap((updatedOrder) => {
+          const currentOrders = this.ordersSubject.getValue();
+          const updatedOrders = currentOrders.map(order => 
+            order._id === id ? updatedOrder : order
+          );
+          this.ordersSubject.next(updatedOrders);
+      })
+    );
   }
 
   deleteOrders(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.endpoint}/${id}`);
+    return this.http.delete<void>(`${this.endpoint}/${id}`).pipe(
+      tap(() => {
+        const currentOrders = this.ordersSubject.getValue();
+        const filteredOrders = currentOrders.filter(order => order._id !== id);
+        this.ordersSubject.next(filteredOrders);
+      })
+    );
+  }
+
+  refreshOrderCount(): void {
+    this.isOrderCountInitialized = false;
+    this.initializeOrderCount();
+  }
+
+  getNextOrderNumber(): number {
+    return this.orderCountSubject.getValue() + 1;
   }
 }
