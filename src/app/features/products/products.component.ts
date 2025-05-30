@@ -27,10 +27,11 @@ import { ImgbbService } from '../../core/services/img/img.service';
 
 import { ProductService } from '../../core/services/products/product.service';
 import { CategoryService } from '../../core/services/categories/category.service';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { addToCart } from '../../state/carts/actions';
+import { selectCartItems } from '../../state/carts/selectors';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AclService } from '../../core/services/acl/acl.service';
 
@@ -75,6 +76,7 @@ export class ProductListComponent implements OnInit {
   previewUrl: string | null = null;
   selectedFile: File | null = null;
   imageUrl: string = '';
+  cartItems$ = this.store.select(selectCartItems);
     
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -90,7 +92,6 @@ export class ProductListComponent implements OnInit {
     private imgbbService: ImgbbService,
     private aclService: AclService,
     private snackBar: SnackBarService
-
   ) {
     this.initializeForm();
   }
@@ -147,6 +148,26 @@ export class ProductListComponent implements OnInit {
       });
   }
 
+  canAddToCart(product: Products): Observable<boolean> {
+    return this.cartItems$.pipe(
+      map(cartItems => {
+        const cartItem = cartItems.find(item => item._id === product._id);
+        const currentQuantityInCart = cartItem ? cartItem.quantity : 0;
+        return product.stock > currentQuantityInCart;
+      })
+    );
+  }
+
+  getAvailableQuantity(product: Products): Observable<number> {
+    return this.cartItems$.pipe(
+      map(cartItems => {
+        const cartItem = cartItems.find(item => item._id === product._id);
+        const currentQuantityInCart = cartItem ? cartItem.quantity : 0;
+        return product.stock - currentQuantityInCart;
+      })
+    );
+  }
+
   applyFilter(event: Event): void {
           const inputValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
 
@@ -188,31 +209,44 @@ export class ProductListComponent implements OnInit {
     this.router.navigate(['/product-detail', id]);
   }
 
-addedToCartMap: { [productId: string]: boolean } = {};
+  addedToCartMap: { [productId: string]: boolean } = {};
 
-addElementToCart(product: any): void {
-  if (this.addedToCartMap[product._id]) return;
-  this.store.dispatch(addToCart({ product, quantity: 1 }));
-  this.addedToCartMap[product._id] = true;
-  setTimeout(() => {
-    this.addedToCartMap[product._id] = false;
-        }, 1000);
-  this.snackBar.openSnackBar(`${product.name} aggiunto al carrello!`, 'success');
-}
+  addElementToCart(product: Products): void {
+    if (this.addedToCartMap[product._id]) return;
+
+    this.canAddToCart(product).subscribe(canAdd => {
+      if (!canAdd) {
+        this.snackBar.openSnackBar('Prodotto non disponibile o quantità massima raggiunta', 'warning');
+        return;
+      }
+
+      if (product.stock <= 0) {
+        this.snackBar.openSnackBar('Prodotto non disponibile', 'warning');
+        return;
+      }
+
+      this.store.dispatch(addToCart({ product, quantity: 1 }));
+      this.addedToCartMap[product._id] = true;
+      setTimeout(() => {
+        this.addedToCartMap[product._id] = false;
+      }, 1000);
+      this.snackBar.openSnackBar(`${product.name} aggiunto al carrello!`, 'success');
+    });
+  }
 
   openAddProductModal(): void {
-      if (this.isAdmin) {
-        this.productForm.reset({
-          price: 0,
-          stock: 0,
-        });
-        this.dialogRef = this.dialog.open(this.addProductModal, {
-          width: '500px',
-          disableClose: true,
-        });
-      } else {
-        this.snackBar.openSnackBar('Non hai i permessi per creare un ordine')
-      }
+    if (this.isAdmin) {
+      this.productForm.reset({
+        price: 0,
+        stock: 0,
+      });
+      this.dialogRef = this.dialog.open(this.addProductModal, {
+        width: '500px',
+        disableClose: true,
+      });
+    } else {
+      this.snackBar.openSnackBar('Non hai i permessi per creare un prodotto', 'warning');
+    }
   }
 
   saveProduct(): void {
@@ -258,38 +292,38 @@ addElementToCart(product: any): void {
           });
       };
 
-        if (this.selectedFile) {
-          this.imgbbService
-            .uploadImage(this.selectedFile)
-            .then((url) => {
-              productData.imageUrl = url;
-              save();
-            })
-            .catch((err) => {
-              this.snackBar.openSnackBar(err, 'warning');
-              this.isLoading = false;
-            });
-        } else {
-          save();
-        }
+      if (this.selectedFile) {
+        this.imgbbService
+          .uploadImage(this.selectedFile)
+          .then((url) => {
+            productData.imageUrl = url;
+            save();
+          })
+          .catch((err) => {
+            this.snackBar.openSnackBar(err, 'warning');
+            this.isLoading = false;
+          });
       } else {
-        this.markFormGroupTouched(this.productForm);
+        save();
       }
+    } else {
+      this.markFormGroupTouched(this.productForm);
     }
+  }
 
-    onFileSelected(event: Event): void {
-      const input = event.target as HTMLInputElement;
-      if (input.files && input.files[0]) {
-        this.selectedFile = input.files[0];
-        this.fileName = this.selectedFile.name;
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedFile = input.files[0];
+      this.fileName = this.selectedFile.name;
 
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.previewUrl = reader.result as string;
-        };
-        reader.readAsDataURL(this.selectedFile);
-      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result as string;
+      };
+      reader.readAsDataURL(this.selectedFile);
     }
+  }
 
   markFormGroupTouched(formGroup: FormGroup): void {
     Object.values(formGroup.controls).forEach((control) => {

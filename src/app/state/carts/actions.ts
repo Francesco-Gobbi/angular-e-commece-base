@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Products } from '../../shared/types';
+import { CartItem, Products } from '../../shared/types';
 
 export const addToCart = createAction(
   '[Cart] Add Item',
@@ -16,6 +16,16 @@ export const removeFromCart = createAction(
   props<{ productId: string }>()
 );
 
+export const setCart = createAction(
+  '[Cart] Set Cart',
+  props<{ products: CartItem[] }>()
+);
+
 export const clearCart = createAction('[Cart] Clear Cart');
 
 export const loadCart = createAction('[Cart] Load Cart');
+
+export const updateProductStock = createAction(
+  '[Cart] Update Product Stock',
+  props<{ updates: { productId: string; newStock: number }[] }>()
+);

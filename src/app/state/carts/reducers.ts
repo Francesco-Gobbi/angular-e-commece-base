@@ -20,10 +20,21 @@ export const cartReducer = createReducer(
 
     let updatedProducts;
 
+    if (product.stock < quantity) {
+      console.warn(`Stock insufficiente per ${product.name}. Disponibili: ${product.stock}, richiesti: ${quantity}`);
+      return state;
+    }
+
     if (existingItem) {
+      const newQuantity = existingItem.quantity + quantity;
+      if (newQuantity > product.stock) {
+        console.warn(`Stock insufficiente per ${product.name}. Disponibili: ${product.stock}, totale richiesto: ${newQuantity}`);
+        return state;
+      }
+      
       updatedProducts = state.products.map((item) =>
         item._id === product._id
-          ? { ...item, quantity: item.quantity + quantity }
+          ? { ...item, quantity: newQuantity }
           : item
       );
     } else {
@@ -43,9 +54,24 @@ export const cartReducer = createReducer(
       return state;
     }
 
+    if (quantity <= 0) {
+      const updatedProducts = state.products.filter(
+        (item) => item._id !== productId
+      );
+      return {
+        ...state,
+        products: updatedProducts,
+      };
+    }
+
+    if (quantity > existingItem.stock) {
+      console.warn(`Stock insufficiente per il prodotto. Disponibili: ${existingItem.stock}, richiesti: ${quantity}`);
+      return state;
+    }
+
     const updatedProducts = state.products.map((item) =>
       item._id === productId
-        ? { ...item, quantity: item.quantity + quantity }
+        ? { ...item, quantity: quantity }
         : item
     );
 
@@ -64,6 +90,11 @@ export const cartReducer = createReducer(
       products: updatedProducts,
     };
   }),
+
+  on(CartActions.setCart, (state, { products }) => ({
+    ...state,
+    products,
+  })),
 
   on(CartActions.clearCart, () => ({
     ...initialCartState,

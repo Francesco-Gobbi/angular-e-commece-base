@@ -23,3 +23,38 @@ export const selectCartTotalPrice = createSelector(
   (items: CartItem[]) =>
     items.reduce((acc, item) => acc + item.price * item.quantity, 0)
 );
+
+export const selectCartProducts = createSelector(
+  selectCartState,
+  (state: Cart) => state.products
+);
+
+export const selectCartItemCount = createSelector(
+  selectCartProducts,
+  (products) => products.reduce((total, item) => total + item.quantity, 0)
+);
+
+export const selectCartTotal = createSelector(
+  selectCartProducts,
+  (products) => products.reduce((total, item) => total + (item.price * item.quantity), 0)
+);
+
+export const selectIsCartEmpty = createSelector(
+  selectCartProducts,
+  (products) => products.length === 0
+);
+
+export const selectCartProductById = (productId: string) =>
+  createSelector(
+    selectCartProducts,
+    (products) => products.find(product => product._id === productId)
+);
+
+export const selectProductQuantityInCart = (productId: string) =>
+  createSelector(
+    selectCartProducts,
+    (products) => {
+      const product = products.find(p => p._id === productId);
+      return product ? product.quantity : 0;
+    }
+);
