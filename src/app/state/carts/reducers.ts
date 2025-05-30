@@ -29,7 +29,6 @@ export const cartReducer = createReducer(
 
     if (existingItem) {
       const newQuantity = existingItem.quantity + quantity;
-      console.log(existingItem.quantity, quantity);
       if (newQuantity > product.stock) {
         console.warn(
           `Stock insufficiente per ${product.name}. Disponibili: ${product.stock}, totale richiesto: ${newQuantity}`

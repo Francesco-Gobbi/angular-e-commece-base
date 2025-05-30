@@ -79,10 +79,12 @@ export class ProductListComponent implements OnInit {
   selectedFile: File | null = null;
   imageUrl: string = '';
   cartItems$ = this.store.select(selectCartItems);
+  product: Products | null = null;
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('addProductModal') addProductModal!: TemplateRef<any>;
+  @ViewChild('confirmDeleteDialog') confirmDeleteDialog!: TemplateRef<any>;
 
   constructor(
     private productService: ProductService,
@@ -221,7 +223,7 @@ export class ProductListComponent implements OnInit {
     if (this.addedToCartMap[product._id]) return;
 
     this.canAddToCart(product)
-      .pipe(take(1)) 
+      .pipe(take(1))
       .subscribe((canAdd) => {
         if (!canAdd) {
           this.snackBar.openSnackBar(
@@ -378,32 +380,45 @@ export class ProductListComponent implements OnInit {
     this.productForm.addControl('_id', this.formBuilder.control(product._id));
   }
 
-  deleteProduct(productId: string): void {
-    if (!this.isAdmin) return;
+  deleteProduct(product: Products): void {
+    this.product = product;
+    this.dialogRef = this.dialog.open(this.confirmDeleteDialog, {
+      width: '400px',
+    });
+  }
 
-    if (confirm('Sei sicuro di voler eliminare questo prodotto?')) {
-      this.isLoading = true;
-      this.productService
-        .deleteProduct(productId)
-        .pipe(
-          catchError((error) => {
-            console.error('Errore eliminazione:', error);
-            this.snackBar.openSnackBar(
-              "Errore durante l'eliminazione",
-              'warning'
-            );
-            return of(null);
-          })
-        )
-        .subscribe((response) => {
+  confirmDelete(): void {
+    if (!this.isAdmin) return;
+    if (!this.product) return;
+
+    this.isLoading = true;
+    this.productService
+      .deleteProduct(this.product._id)
+      .pipe(
+        catchError((error) => {
+          console.error('Errore eliminazione:', error);
           this.snackBar.openSnackBar(
-            'Prodotto eliminato con successo',
-            'success'
+            "Errore durante l'eliminazione",
+            'warning'
           );
-          this.loadProducts();
           this.isLoading = false;
-        });
-    }
+          return of(null);
+        })
+      )
+      .subscribe((response) => {
+        this.snackBar.openSnackBar(
+          'Prodotto eliminato con successo',
+          'success'
+        );
+        this.loadProducts();
+
+        if (this.dialogRef) {
+          this.dialogRef.close();
+        }
+
+        this.product = null;
+        this.isLoading = false;
+      });
   }
 
   onImageError(event: Event) {
