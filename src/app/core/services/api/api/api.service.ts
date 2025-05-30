@@ -1,40 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-interface ApiQueryParams {
-  page?: number;
-  limit?: number;
-  sort?: string[];
-  fields?: string[];
-  [key: string]: any;
-}
-
-interface OrdersResponse {
-  data: Order[];
-  total: number;
-}
-
-interface UsersResponse {
-  data: User[];
-  total: number;
-}
-
-interface Order {
-  id: string;
-  orderNumber: string;
-  customerName: string;
-  totalAmount: number;
-  status: string;
-  createdAt: string;
-}
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
-
+import { environment } from '../../../../../environments/environment.development';
+import {ApiQueryParams, OrdersResponse, UsersResponse, } from '../../../../shared/types/index'
 /**
  * Service for making API calls to the backend
  */
@@ -42,7 +10,7 @@ interface User {
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly baseUrl = 'https://your-api-base-url.com'; // Sostituisci con il tuo URL
+  private readonly baseUrl = ; // Sostituisci con il tuo URL
 
   constructor(private http: HttpClient) {}
 
