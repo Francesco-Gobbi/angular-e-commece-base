@@ -46,7 +46,7 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  
+
   postWithBasicAuth<T>(endpoint: string, body: any, username: string, password: string): Observable<T> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -75,9 +75,9 @@ export class ApiService {
    * Get all orders (for dashboard calculations)
    */
   getAllOrders(): Observable<OrdersResponse> {
-    return this.getOrders({ 
+    return this.getOrders({
       limit: 100, // Get more orders for better dashboard data
-      sort: ['-createdAt'] 
+      sort: ['-createdAt']
     });
   }
 
@@ -85,7 +85,7 @@ export class ApiService {
    * Get recent orders for dashboard
    */
   getRecentOrders(limit: number = 10): Observable<OrdersResponse> {
-    return this.getOrders({ 
+    return this.getOrders({
       limit,
       sort: ['-createdAt'],
       fields: ['id', 'orderNumber', 'customerName', 'totalAmount', 'status', 'createdAt']

@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { OrdersService } from '../../core/services/orders/orders.service';
 import { OrderDetailsComponent } from '../order-detail/order-detail.component';
 import { CommonModule } from '@angular/common';
@@ -14,12 +14,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { Order, OrderItems, User } from '../../shared/types';
-import { Subscription, interval } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import {Order, OrderItems} from '../../shared/types';
+import {of, Subscription} from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SnackBarService } from '../../shared/components/snack-bar/service/snack-bar.service';
 import { AclService } from '../../core/services/acl/acl.service'
+import {catchError} from "rxjs/operators";
 @Component({
   selector: 'OrderTable',
   templateUrl: './orders.component.html',
@@ -41,14 +41,14 @@ import { AclService } from '../../core/services/acl/acl.service'
     ReactiveFormsModule
   ],
 })
-export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
+export class OrdersTableComponent implements OnInit {
   loading = true;
   error: string | null = null;
   private refreshSubscription: Subscription | null = null;
   selectedOrder: Order | null = null;
   editOrderForm: FormGroup;
   orderItems: OrderItems[] = [];
-  
+
   displayedColumns: string[] = [
     'id',
     'orderNumber',
@@ -56,13 +56,13 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
     'status',
     'actions',
   ];
-  dataSource = new MatTableDataSource<Order>([]);
+  dataSource: MatTableDataSource<Order> = new MatTableDataSource<Order>([]);
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild('editOrderDialog') editOrderDialog!: TemplateRef<any>;
   @ViewChild('confirmDeleteDialog') confirmDeleteDialog!: TemplateRef<any>;
-  
+
   get isAdmin(): boolean {
     return this.aclService.isAdmin()
   }
@@ -81,48 +81,23 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadOrders();
-    this.refreshSubscription = interval(30000)
-      .pipe(switchMap(() => this.orderService.getOrders()))
-      .subscribe({
-        next: (orders: Order[]) => {
-          this.dataSource.data = orders;
-        },
-        error: (err) => {
-          console.error('Errore nell\'aggiornamento automatico degli ordini', err);
-        }
-      });
-  }
-
-  ngOnDestroy(): void {
-    if (this.refreshSubscription) {
-      this.refreshSubscription.unsubscribe();
-    }
   }
 
   loadOrders(): void {
     this.loading = true;
-    this.orderService.getOrders().subscribe({
-      next: (orders: Order[]) => {
-        this.dataSource.data = orders;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Errore nel caricamento degli ordini', err);
+    this.orderService.getOrders().pipe(
+      catchError((error) => {
+        console.error('Errore nel caricamento degli ordini', error);
         this.error = 'Errore nel caricamento degli ordini';
         this.loading = false;
-      },
+        return of([]);
+      })
+    ).subscribe((orders: Order[]) => {
+        this.dataSource = new MatTableDataSource(orders);
+        this.dataSource.paginator = this.paginator;
+        this.loading = false;
+        this.dataSource.sort = this.sort;
     });
-  }
-
-  refreshOrders(): void {
-    this.loading = true;
-    this.error = null;
-    this.loadOrders();
-  }
-
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
   }
 
   applyFilter(event: Event): void {
@@ -205,7 +180,7 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
       next: () => {
         this.dialog.closeAll();
         this.snackBar.openSnackBar('Ordine eliminato con successo');
-        this.refreshOrders();
+        this.loadOrders();
       },
       error: (err) => {
         this.loading = false;
@@ -247,7 +222,7 @@ export class OrdersTableComponent implements OnInit, AfterViewInit, OnDestroy {
       next: () => {
         this.dialog.closeAll();
         this.snackBar.openSnackBar('Stato ordine aggiornato con successo');
-        this.refreshOrders();
+        this.loadOrders();
       },
       error: (err) => {
         this.loading = false;

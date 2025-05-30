@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { AuthApiService } from '../api/auth-api/auth-api.service';
-import { Order, OrderItems, OrdersQueryParams, PaginatedOrdersResponse } from '../../../shared/types';
+import { Order, OrdersQueryParams, PaginatedOrdersResponse } from '../../../shared/types';
 import { HttpParams } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
@@ -17,7 +17,7 @@ export class OrdersService {
 
   getOrdersPaginated(params?: OrdersQueryParams): Observable<PaginatedOrdersResponse> {
     let httpParams = new HttpParams();
-    
+
     if (params) {
       if (params.page) httpParams = httpParams.set('page', params.page.toString());
       if (params.limit) httpParams = httpParams.set('limit', params.limit.toString());
@@ -31,7 +31,7 @@ export class OrdersService {
           httpParams = httpParams.append('fields', field);
         });
       }
-      
+
       Object.keys(params).forEach(key => {
         if (!['page', 'limit', 'sort', 'fields'].includes(key)) {
           httpParams = httpParams.set(key, params[key]);
@@ -55,16 +55,7 @@ export class OrdersService {
   getOrders(): Observable<Order[]> {
     return this.http
       .get<Order[]>(this.endpoint)
-      .pipe(
-        map((res: any) => res || []),
-        tap(orders => {
-          this.ordersSubject.next(orders);
-          if (orders.length > 0) {
-            const maxOrderNumber = Math.max(...orders.map(order => Number(order.orderNumber)));
-            this.orderCountSubject.next(maxOrderNumber);
-          }
-        })
-      );
+      .pipe(map((res) => res || []));
   }
 
   getOrderById(id: string): Observable<Order> {

@@ -2,7 +2,7 @@
   <div class="header-container">
     <h2>Elenco Ordini</h2>
     <div class="actions-container">
-      <button mat-raised-button color="primary" (click)="refreshOrders()" matTooltip="Aggiorna lista">
+      <button mat-raised-button color="primary" (click)="loadOrders()" matTooltip="Aggiorna lista">
         <mat-icon>refresh</mat-icon> Aggiorna
       </button>
       <mat-form-field class="filter-input" appearance="outline">
@@ -20,11 +20,10 @@
 
   <div *ngIf="error" class="error-container">
     <div class="error-message">{{ error }}</div>
-    <button mat-button color="primary" (click)="refreshOrders()">Riprova</button>
+    <button mat-button color="primary" (click)="loadOrders()">Riprova</button>
   </div>
 
   <div class="table-container mat-elevation-z8" *ngIf="!loading && !error">
-    <div class="table-wrapper">
       <table mat-table [dataSource]="dataSource" matSort>
 
         <ng-container matColumnDef="id">
@@ -45,7 +44,7 @@
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Stato </th>
           <td mat-cell *matCellDef="let row">
-            <span [ngClass]="{'status-pending': row.status === 'pending', 
+            <span [ngClass]="{'status-pending': row.status === 'pending',
                              'status-completed': row.status === 'completed',
                              'status-cancelled': row.status === 'cancelled'}">
               {{ row.status }}
@@ -75,17 +74,8 @@
           <td class="mat-cell" colspan="5">Nessun dato corrisponde al filtro "{{input.value}}"</td>
         </tr>
       </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
     </div>
-
-    <!-- Paginazione -->
-    <mat-paginator 
-      #paginator
-      [pageSizeOptions]="[5, 10, 25, 50]" 
-      [pageSize]="10"
-      [showFirstLastButtons]="true"
-      aria-label="Seleziona pagina ordini">
-    </mat-paginator>
-  </div>
 </div>
 
 <!-- Edit Order Dialog -->
