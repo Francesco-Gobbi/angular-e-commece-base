@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 interface ApiQueryParams {
   page?: number;
@@ -46,6 +46,15 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
+  
+  postWithBasicAuth<T>(endpoint: string, body: any, username: string, password: string): Observable<T> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: 'Basic ' + btoa(`${username}:${password}`),
+    });
+
+  return this.http.post<T>(`${this.baseUrl}${endpoint}`, body, { headers });
+}
   /**
    * Get orders with optional query parameters
    */
