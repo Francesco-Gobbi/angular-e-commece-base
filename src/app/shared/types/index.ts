@@ -114,3 +114,21 @@ export interface RecentOrder {
   status: 'pending' | 'completed' | 'cancelled';
   createdAt: string;
 }
+
+export interface ApiQueryParams {
+  page?: number;
+  limit?: number;
+  sort?: string[];
+  fields?: string[];
+  [key: string]: any;
+}
+
+export interface OrdersResponse {
+  data: Order[];
+  total: number;
+}
+
+export interface UsersResponse {
+  data: User[];
+  total: number;
+}
