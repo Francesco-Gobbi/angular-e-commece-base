@@ -45,7 +45,7 @@ export const cartReducer = createReducer(
 
     const updatedProducts = state.products.map((item) =>
       item._id === productId
-        ? { ...item, quantity: item.quantity + quantity }
+        ? { ...item, quantity: quantity }
         : item
     );
 

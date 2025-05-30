@@ -26,10 +26,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { ProductService } from '../../core/services/products/product.service';
 import { CategoryService } from '../../core/services/categories/category.service';
 import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { addToCart } from '../../state/carts/actions';
+import { addToCart, loadCart } from '../../state/carts/actions';
 import { Products } from '../../shared/types';
+import {
+  selectCartItems,
+  selectItemExistInCart,
+} from '../../state/carts/selectors';
 
 @Component({
   selector: 'app-product-list',
@@ -61,11 +65,14 @@ export class ProductListComponent implements OnInit {
     'category',
     'actions',
   ];
-  dataSource: MatTableDataSource<Products> = new MatTableDataSource<Products>([]);
+  dataSource: MatTableDataSource<Products> = new MatTableDataSource<Products>(
+    []
+  );
   productForm!: FormGroup; // Add non-null assertion operator
   categories: any[] = [];
   dialogRef!: MatDialogRef<any>; // Add non-null assertion operator
   isLoading = false;
+  itemDisabledMap: { [productId: string]: Observable<boolean> } = {};
 
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator; // Add non-null assertion operator
   @ViewChild(MatSort, { static: true }) sort!: MatSort; // Add non-null assertion operator
@@ -113,6 +120,13 @@ export class ProductListComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.isLoading = false;
+
+        // 👉 Popola la mappa con gli observable per ogni prodotto
+        products.forEach((product) => {
+          this.itemDisabledMap[product._id] = this.store.select(
+            selectItemExistInCart(product._id)
+          );
+        });
       });
   }
 
@@ -145,6 +159,17 @@ export class ProductListComponent implements OnInit {
 
   goToProductDetail(id: string): void {
     this.router.navigate(['/product-detail', id]);
+  }
+
+  deleteElement(id: string): void {
+    this.productService.deleteProduct(id).subscribe({
+      next: (res) => {
+        this.loadProducts();
+      },
+      error: (err) => {
+        console.error("Errore durante la creazione dell'ordine:", err);
+      },
+    });
   }
 
   addElementToCart(product: Products): void {

@@ -8,6 +8,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDivider } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { Products } from '../../shared/types';
+import { Store } from '@ngrx/store';
+import { addToCart } from '../../state/carts/actions';
 
 @Component({
   selector: 'app-product-detail',
@@ -31,7 +33,8 @@ export class ProductDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private store: Store
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +51,10 @@ export class ProductDetailComponent implements OnInit {
         },
       });
     }
+  }
+
+  addElementToCart(product: Products): void {
+    this.store.dispatch(addToCart({ product, quantity: 1 }));
   }
 
   goToProducts(): void {

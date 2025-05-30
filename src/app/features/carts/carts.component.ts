@@ -54,7 +54,6 @@ export class CartComponent implements OnInit {
     this.items$ = this.store.select(selectCartItems) || [];
     this.user$.subscribe((user) => {
       if (user) {
-        console.log(user);
         this.user = user;
       }
     });
