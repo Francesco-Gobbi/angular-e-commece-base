@@ -1,3 +1,5 @@
+import { SnackBarService } from './../../shared/components/snack-bar/service/snack-bar.service';
+import { Products } from './../../shared/types/index';
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -8,7 +10,6 @@ import {
 } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 
-// Angular Material imports
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -22,18 +23,20 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { ImgbbService } from '../../core/services/img/img.service';
 
 import { ProductService } from '../../core/services/products/product.service';
 import { CategoryService } from '../../core/services/categories/category.service';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { addToCart, loadCart } from '../../state/carts/actions';
-import { Products } from '../../shared/types';
 import {
   selectCartItems,
   selectItemExistInCart,
 } from '../../state/carts/selectors';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { AclService } from '../../core/services/acl/acl.service';
 
 @Component({
   selector: 'app-product-list',
@@ -53,11 +56,11 @@ import {
     MatDialogModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatSnackBarModule,
   ],
 })
 export class ProductListComponent implements OnInit {
   displayedColumns: string[] = [
-    // '_id',
     'image',
     'name',
     'stock',
@@ -68,15 +71,21 @@ export class ProductListComponent implements OnInit {
   dataSource: MatTableDataSource<Products> = new MatTableDataSource<Products>(
     []
   );
-  productForm!: FormGroup; // Add non-null assertion operator
+  productForm!: FormGroup;
   categories: any[] = [];
-  dialogRef!: MatDialogRef<any>; // Add non-null assertion operator
+  dialogRef!: MatDialogRef<any>;
   isLoading = false;
+  addedToCart = false;
+  fileName: string | null = null;
+  previewUrl: string | null = null;
+  selectedFile: File | null = null;
+  imageUrl: string = '';
+  cartItems$ = this.store.select(selectCartItems);
   itemDisabledMap: { [productId: string]: Observable<boolean> } = {};
 
-  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator; // Add non-null assertion operator
-  @ViewChild(MatSort, { static: true }) sort!: MatSort; // Add non-null assertion operator
-  @ViewChild('addProductModal') addProductModal!: TemplateRef<any>; // Add non-null assertion operator
+  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
+  @ViewChild('addProductModal') addProductModal!: TemplateRef<any>;
 
   constructor(
     private productService: ProductService,
@@ -84,12 +93,19 @@ export class ProductListComponent implements OnInit {
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
     private router: Router,
-    private store: Store
+    private store: Store,
+    private imgbbService: ImgbbService,
+    private aclService: AclService,
+    private snackBar: SnackBarService
   ) {
     this.initializeForm();
   }
 
-  initializeForm(): void {
+  get isAdmin(): boolean {
+    return this.aclService.isAdmin();
+  }
+
+  private initializeForm(): void {
     this.productForm = this.formBuilder.group({
       name: ['', Validators.required],
       price: [0, [Validators.required, Validators.min(0)]],
@@ -144,9 +160,57 @@ export class ProductListComponent implements OnInit {
       });
   }
 
+  canAddToCart(product: Products): Observable<boolean> {
+    return this.cartItems$.pipe(
+      map((cartItems) => {
+        const cartItem = cartItems.find((item) => item._id === product._id);
+        const currentQuantityInCart = cartItem ? cartItem.quantity : 0;
+        return product.stock > currentQuantityInCart;
+      })
+    );
+  }
+
+  getAvailableQuantity(product: Products): Observable<number> {
+    return this.cartItems$.pipe(
+      map((cartItems) => {
+        const cartItem = cartItems.find((item) => item._id === product._id);
+        const currentQuantityInCart = cartItem ? cartItem.quantity : 0;
+        return product.stock - currentQuantityInCart;
+      })
+    );
+  }
+
   applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    const inputValue = (event.target as HTMLInputElement).value
+      .trim()
+      .toLowerCase();
+
+    if (inputValue.startsWith('#nome')) {
+      const filter = inputValue.substring(5).trim();
+      this.dataSource.filterPredicate = (data: Products, filter: string) =>
+        data.name?.toLowerCase().includes(filter) ?? false;
+      this.dataSource.filter = filter;
+    } else if (inputValue.startsWith('#categoria')) {
+      const filter = inputValue.substring(10).trim();
+      this.dataSource.filterPredicate = (data: Products, filter: string) =>
+        data.category?.name?.toLowerCase().includes(filter) ?? false;
+      this.dataSource.filter = filter;
+    } else if (inputValue.startsWith('#prezzo')) {
+      const filter = inputValue.substring(8).trim();
+      this.dataSource.filterPredicate = (data: Products, filter: string) =>
+        data.price.toString().includes(filter);
+      this.dataSource.filter = filter;
+    } else {
+      this.dataSource.filterPredicate = (data: Products, filter: string) => {
+        const nameMatch = data.name?.toLowerCase().includes(filter) ?? false;
+        const descMatch =
+          data.description?.toLowerCase().includes(filter) ?? false;
+        const catMatch =
+          data.category?.name?.toLowerCase().includes(filter) ?? false;
+        return nameMatch || descMatch || catMatch;
+      };
+      this.dataSource.filter = inputValue;
+    }
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
@@ -171,50 +235,129 @@ export class ProductListComponent implements OnInit {
       },
     });
   }
+  addedToCartMap: { [productId: string]: boolean } = {};
 
   addElementToCart(product: Products): void {
-    this.store.dispatch(addToCart({ product, quantity: 1 }));
+    if (this.addedToCartMap[product._id]) return;
+
+    this.canAddToCart(product).subscribe((canAdd) => {
+      if (!canAdd) {
+        this.snackBar.openSnackBar(
+          'Prodotto non disponibile o quantità massima raggiunta',
+          'warning'
+        );
+        return;
+      }
+
+      if (product.stock <= 0) {
+        this.snackBar.openSnackBar('Prodotto non disponibile', 'warning');
+        return;
+      }
+
+      this.store.dispatch(addToCart({ product, quantity: 1 }));
+      this.addedToCartMap[product._id] = true;
+      setTimeout(() => {
+        this.addedToCartMap[product._id] = false;
+      }, 1000);
+      this.snackBar.openSnackBar(
+        `${product.name} aggiunto al carrello!`,
+        'success'
+      );
+    });
   }
 
   openAddProductModal(): void {
-    this.productForm.reset({
-      price: 0,
-      stock: 0,
-    });
-    this.dialogRef = this.dialog.open(this.addProductModal, {
-      width: '500px',
-      disableClose: true,
-    });
+    if (this.isAdmin) {
+      this.productForm.reset({
+        price: 0,
+        stock: 0,
+      });
+      this.dialogRef = this.dialog.open(this.addProductModal, {
+        width: '500px',
+        disableClose: true,
+      });
+    } else {
+      this.snackBar.openSnackBar(
+        'Non hai i permessi per creare un prodotto',
+        'warning'
+      );
+    }
   }
 
   saveProduct(): void {
     if (this.productForm.valid) {
       const productData = this.productForm.value;
       this.isLoading = true;
-      this.productService
-        .createProduct(productData)
-        .pipe(
-          catchError((error) => {
-            console.error('Error saving product:', error);
-            this.isLoading = false;
-            return of(null);
-          })
-        )
-        .subscribe(
-          (newProduct: Products | null) => {
-            if (newProduct) {
+
+      if (this.selectedFile) {
+        this.imgbbService
+          .uploadImage(this.selectedFile)
+          .then((url) => (this.imageUrl = url))
+          .catch((err) => this.snackBar.openSnackBar(err, 'warning'));
+      }
+
+      if (!productData.imageFile && !productData.imageUrl) {
+        productData.imageUrl = '../../assets/img/placeholder.png';
+      }
+
+      const save = () => {
+        const hasId = !!productData._id;
+
+        const request$ = hasId
+          ? this.productService.updateProduct(productData._id, productData)
+          : this.productService.createProduct(productData);
+
+        request$
+          .pipe(
+            catchError((error) => {
+              console.error('Errore salvataggio:', error);
+              this.isLoading = false;
+              return of(null);
+            })
+          )
+          .subscribe((response: Products | null) => {
+            if (response) {
               this.loadProducts();
               this.dialogRef.close();
+              this.snackBar.openSnackBar(
+                hasId ? 'Prodotto aggiornato' : 'Prodotto creato',
+                'success'
+              );
             }
             this.isLoading = false;
-          },
-          (error) => {
-            console.error('Error saving product:', error);
+          });
+      };
+
+      if (this.selectedFile) {
+        this.imgbbService
+          .uploadImage(this.selectedFile)
+          .then((url) => {
+            productData.imageUrl = url;
+            save();
+          })
+          .catch((err) => {
+            this.snackBar.openSnackBar(err, 'warning');
             this.isLoading = false;
-          }
-        );
+          });
+      } else {
+        save();
+      }
     } else {
       this.markFormGroupTouched(this.productForm);
+    }
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedFile = input.files[0];
+      this.fileName = this.selectedFile.name;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result as string;
+      };
+      reader.readAsDataURL(this.selectedFile);
     }
   }
 
@@ -225,6 +368,63 @@ export class ProductListComponent implements OnInit {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  editProduct(product: Products): void {
+    if (!this.isAdmin) return;
+
+    this.productForm.patchValue({
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
+      categoryId: product.category?._id,
+      description: product.description,
+      imageUrl: product.imageUrl,
+    });
+
+    this.selectedFile = null;
+    this.fileName = null;
+    this.previewUrl = product.imageUrl;
+
+    this.dialogRef = this.dialog.open(this.addProductModal, {
+      width: '500px',
+      disableClose: true,
+    });
+
+    this.productForm.addControl('_id', this.formBuilder.control(product._id));
+  }
+
+  deleteProduct(productId: string): void {
+    if (!this.isAdmin) return;
+
+    if (confirm('Sei sicuro di voler eliminare questo prodotto?')) {
+      this.isLoading = true;
+      this.productService
+        .deleteProduct(productId)
+        .pipe(
+          catchError((error) => {
+            console.error('Errore eliminazione:', error);
+            this.snackBar.openSnackBar(
+              "Errore durante l'eliminazione",
+              'warning'
+            );
+            return of(null);
+          })
+        )
+        .subscribe((response) => {
+          this.snackBar.openSnackBar(
+            'Prodotto eliminato con successo',
+            'success'
+          );
+          this.loadProducts();
+          this.isLoading = false;
+        });
+    }
+  }
+
+  onImageError(event: Event) {
+    const target = event.target as HTMLImageElement;
+    target.src = 'assets/img/placeholder.png';
   }
 
   closeDialog(): void {

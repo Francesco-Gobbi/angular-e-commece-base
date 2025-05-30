@@ -23,6 +23,7 @@ import { CategoryService } from '../../core/services/categories/category.service
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Categories } from '../../shared/types';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-category-list',
@@ -40,6 +41,7 @@ import { Categories } from '../../shared/types';
     MatButtonModule,
     MatDialogModule,
     MatIconModule,
+    MatTooltipModule
   ],
 })
 export class CategoryComponent implements OnInit {
@@ -96,8 +98,31 @@ export class CategoryComponent implements OnInit {
   }
 
   applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    const filterValue = (event.target as HTMLInputElement).value
+      .trim()
+      .toLowerCase();
+
+    if (filterValue.startsWith('#nome')) {
+      const nameFilter = filterValue.substring(6).trim().toLowerCase();
+      this.dataSource.filterPredicate = (data: Categories, filter: string) => {
+        return data.name.toLowerCase().includes(filter);
+      };
+      this.dataSource.filter = nameFilter;
+    } else if (filterValue.startsWith('#descrizione')) {
+      const descFilter = filterValue.substring(13).trim().toLowerCase();
+      this.dataSource.filterPredicate = (data: Categories, filter: string) => {
+        return data.description ? data.description.toLowerCase().includes(filter) : false;
+      };
+      this.dataSource.filter = descFilter;
+    } else {
+      this.dataSource.filterPredicate = (data: Categories, filter: string) => {
+        const nameMatch = data.name.toLowerCase().includes(filter);
+        const descMatch = data.description ?
+          data.description.toLowerCase().includes(filter) : false;
+        return nameMatch || descMatch;
+      };
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+    }
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();

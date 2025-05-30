@@ -18,8 +18,8 @@
 
   <mat-card-content>
     <div class="product-price">
-      <span class="price-tag">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</span>
-      <span class="totalPrice">{{ product.price*product.stock | currency:'EUR':'symbol':'1.2-2' }}</span>
+      <span class="price-tag">Price: {{ product.price | currency:'EUR':'symbol':'1.2-2' }}</span>
+      <span class="totalPrice">Total price: {{product.price | currency:'EUR':'symbol':'1.2-2'}} x {{product.stock}} = {{ product.price*product.stock | currency:'EUR':'symbol':'1.2-2' }}</span>
       <!-- <span class="stock-tag"
         [ngClass]="{'in-stock': product.stock > 10, 'low-stock': product.stock <= 10 && product.stock > 0, 'out-of-stock': product.stock <= 0}">
         {{ product.stock > 0 ? (product.stock > 10 ? 'In Stock' : 'Low Stock') : 'Out of Stock' }}
@@ -59,10 +59,8 @@
     <!-- <button mat-button color="primary" (click)="goToProducts()">
       <mat-icon>arrow_back</mat-icon> Indietro
     </button> -->
-    <button mat-raised-button color="primary" class="modify-to-cart-button">
-      <mat-icon>edit</mat-icon> Modifica
-    </button>
-    <button mat-fab color="accent" class="add-to-cart-button" (click)="addElementToCart(product)">
+    <button mat-fab color="accent" [disabled]="this.isDisable" (click)="addElementToCart(product)" class="add-to-cart-button">
+
       <mat-icon>add_shopping_cart</mat-icon>
     </button>
   </mat-card-actions>

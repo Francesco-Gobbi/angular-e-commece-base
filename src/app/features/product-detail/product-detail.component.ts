@@ -8,6 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDivider } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { Products } from '../../shared/types';
+import { SnackBarService } from '../../shared/components/snack-bar/service/snack-bar.service';
 import { Store } from '@ngrx/store';
 import { addToCart } from '../../state/carts/actions';
 
@@ -29,11 +30,13 @@ export class ProductDetailComponent implements OnInit {
   product: Products | null = null;
   loading = true;
   error: string | null = null;
+  isDisable: Boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
+    private snackBar: SnackBarService,
     private store: Store
   ) {}
 
@@ -53,8 +56,16 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
-  addElementToCart(product: Products): void {
+  addElementToCart(product: any): void {
     this.store.dispatch(addToCart({ product, quantity: 1 }));
+    this.isDisable = true;
+    setInterval(() => {
+      this.isDisable = false;
+    }, 1000);
+    this.snackBar.openSnackBar(
+      `${product.name} aggiunto al carrello!`,
+      'success'
+    );
   }
 
   goToProducts(): void {

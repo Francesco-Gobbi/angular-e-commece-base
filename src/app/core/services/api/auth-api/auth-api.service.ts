@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../../environments/environment.development';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 
@@ -8,7 +7,7 @@ import {Observable} from "rxjs";
   providedIn: 'root'
 })
 export class AuthApiService {
-  private baseUrl = environment.apiUrl;
+  private baseUrl = 'https://server-angular-jac.dev.aws.r-s.cloud/api';
 
 
   private defaultHeaders = new HttpHeaders({

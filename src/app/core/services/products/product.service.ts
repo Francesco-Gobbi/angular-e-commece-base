@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthApiService } from '../api/auth-api/auth-api.service';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Products } from '../../../shared/types';
 
@@ -36,5 +36,20 @@ export class ProductService {
 
   deleteProduct(id: string): Observable<void> {
     return this.http.delete<void>(`${this.endpoint}/${id}`);
+  }
+
+  updateProductStock(id: string, newStock: number): Observable<Products> {
+    const body = { stock: newStock };
+    return this.http
+      .put<Products>(`${this.endpoint}/${id}`, body)
+      .pipe(map((res) => res));
+  }
+
+  updateMultipleProductsStock(updates: { productId: string; newStock: number }[]): Observable<Products[]> {
+    const updateRequests = updates.map(update => 
+      this.updateProductStock(update.productId, update.newStock)
+    );
+    
+    return forkJoin(updateRequests);
   }
 }

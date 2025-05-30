@@ -1,12 +1,42 @@
-<h1 mat-dialog-title>Order Details</h1>
-<div mat-dialog-content>
-  <p><strong>ID:</strong> {{ data._id }}</p>
-  <p><strong>Order Number:</strong> {{ data.orderNumber }}</p>
-  <p><strong>Total Amount:</strong> {{ data.totalAmount }}</p>
-  <p><strong>Status:</strong> {{ data.status }}</p>
-  <p><strong>Created At:</strong> {{ data.createdAt }}</p>
-  <p><strong>Updated At:</strong> {{ data.updatedAt }}</p>
+<h1 mat-dialog-title class="dialog-title">Dettaglio Ordine</h1>
+<div mat-dialog-content class="dialog-content">
+  <div class="order-info-grid">
+    <div class="info-group">
+      <span class="label">ID:</span>
+      <span class="value">{{ data._id }}</span>
+    </div>
+
+    <div class="info-group">
+      <span class="label">Numero Ordine:</span>
+      <span class="value">{{ data.orderNumber }}</span>
+    </div>
+
+    <div class="info-group">
+      <span class="label">Importo Totale:</span>
+      <span class="value amount">{{ data.totalAmount | currency:'EUR' }}</span>
+    </div>
+
+    <div class="info-group">
+      <span class="label">Stato:</span>
+      <span class="value" [ngClass]="{
+        'status-pending': data.status === 'pending',
+        'status-completed': data.status === 'completed',
+        'status-cancelled': data.status === 'cancelled'
+      }">{{ data.status }}</span>
+    </div>
+
+    <div class="info-group">
+      <span class="label">Creato il:</span>
+      <span class="value">{{ data.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+    </div>
+
+    <div class="info-group">
+      <span class="label">Aggiornato il:</span>
+      <span class="value">{{ data.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+    </div>
+  </div>
 </div>
-<div mat-dialog-actions>
-  <button mat-button (click)="closeDialog()">Close</button>
+
+<div mat-dialog-actions class="dialog-actions">
+  <button mat-flat-button color="primary" (click)="closeDialog()">Chiudi</button>
 </div>
