@@ -1,20 +1,57 @@
 <mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #sidenav
+    [mode]="isDesktop ? 'side' : 'over'"
+    [opened]="isDesktop"
+    class="sidebar"
+  >
+    <div class="sidebar-header">
+      <h2>E-Commerce</h2>
+    </div>
 
-  <mat-sidenav #sidenav mode="side" [opened]="isDesktop" class="sidebar">
-    <app-sidebar></app-sidebar>
+    <nav class="nav-list">
+      <a class="nav-item" routerLink="/products" routerLinkActive="active">
+        <mat-icon>inventory_2</mat-icon>
+        Prodotti
+      </a>
+      <a class="nav-item" routerLink="/orders" routerLinkActive="active">
+        <mat-icon>shopping_cart</mat-icon>
+        Ordini
+      </a>
+      <a class="nav-item" routerLink="/categories" routerLinkActive="active">
+        <mat-icon>category</mat-icon>
+        Categorie
+      </a>
+      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+        <mat-icon>analytics</mat-icon>
+        Dashboard
+      </a>
+      <a class="nav-item" routerLink="/profile" routerLinkActive="active">
+        <mat-icon>person</mat-icon>
+        Profilo
+      </a>
+    </nav>
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="!isDesktop">
-        <mat-icon>{{ sidenav.opened ? 'menu_open' : 'menu' }}</mat-icon>
+    <mat-toolbar color="primary" class="mat-elevation-z1">
+      <button
+        mat-icon-button
+        (click)="sidenav.toggle()"
+        *ngIf="!isDesktop"
+        aria-label="Toggle sidebar"
+      >
+        <mat-icon>{{ sidenav.opened ? 'close' : 'menu' }}</mat-icon>
       </button>
-      <span>E-Commerce</span>
+      <span class="toolbar-title"></span>
+
+      <span class="toolbar-spacer"></span>
+
+
     </mat-toolbar>
 
     <div class="content">
       <router-outlet></router-outlet>
     </div>
   </mat-sidenav-content>
-
 </mat-sidenav-container>

@@ -1,11 +1,18 @@
+// Container principale
 .sidenav-container {
   height: 100vh;
+  background: #f8f9fa;
 }
 
+// Sidebar
 mat-sidenav {
-  width: 250px;
+  width: 260px;
+  background: #7c3aed;
+  border: none;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.15);
 }
 
+// Contenuto principale
 mat-sidenav-content {
   display: flex;
   flex-direction: column;
@@ -14,6 +21,106 @@ mat-sidenav-content {
 
 .content {
   flex: 1;
-  padding: 16px;
+  padding: 24px;
   overflow: auto;
+  background: #ffffff;
+}
+
+// Header della sidebar
+.sidebar-header {
+  padding: 24px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  h2 {
+    color: white;
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+}
+
+// Lista di navigazione
+.nav-list {
+  padding: 20px 0;
+
+  .nav-item {
+    display: block;
+    padding: 14px 24px;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 3px solid transparent;
+    position: relative;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      border-left-color: rgba(255, 255, 255, 0.3);
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: white;
+      border-left-color: white;
+      font-weight: 600;
+    }
+
+    mat-icon {
+      margin-right: 12px;
+      vertical-align: middle;
+    }
+  }
+}
+
+// Toolbar
+.mat-toolbar {
+  background: white !important;
+  color: #374151 !important;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  .mat-icon-button {
+    color: #374151;
+  }
+
+  .toolbar-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+}
+
+// Responsive
+@media (max-width: 1023px) {
+  mat-sidenav {
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// Animazioni
+.nav-item {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
 }
