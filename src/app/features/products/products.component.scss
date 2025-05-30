@@ -48,15 +48,15 @@
   border-radius: 5px;
   background-color: #ffffff;
   display: flex;
-  overflow: hidden;
+  overflow: auto;
   flex-direction: column;
   padding: 16px;
 }
 
 table {
   flex: 1;
-  overflow: hidden;
   border-radius: 8px;
+  min-width: 700px;
 }
 
 /* Stili per la modale */
@@ -77,6 +77,21 @@ table {
   margin-bottom: 15px;
 }
 
+.image-preview-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
+  object-fit: contain;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
 @media (max-width: 508px) {
   .filter-container {
     flex-direction: column;
@@ -91,19 +106,4 @@ table {
   .table-container {
     max-height: calc(100vh - 150px);
   }
-}
-
-.image-preview-container {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.image-preview {
-  max-width: 100%;
-  max-height: 400px;
-  border-radius: 8px;
-  object-fit: contain;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
